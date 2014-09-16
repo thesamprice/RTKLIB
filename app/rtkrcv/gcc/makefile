@@ -8,7 +8,7 @@ SRC    = ../../../src
 CTARGET= -DENAGLO -DENAGAL -DENAQZS -DNFREQ=3
 
 CFLAGS = -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I$(SRC) -DTRACE $(CTARGET) -g
-LDLIBS  = -lm -lrt -lpthread
+LDLIBS  = -lm  -lpthread
 
 all        : rtkrcv
 rtkrcv     : rtkrcv.o rtkcmn.o rtksvr.o rtkpos.o geoid.o solution.o lambda.o
