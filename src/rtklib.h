@@ -93,22 +93,32 @@ extern "C" {
 #define EFACT_CMP   1.0                 /* error factor: BeiDou */
 #define EFACT_SBS   3.0                 /* error factor: SBAS */
 
-#define SYS_NONE    0x00                /* navigation system: none */
-#define SYS_GPS     0x01                /* navigation system: GPS */
-#define SYS_SBS     0x02                /* navigation system: SBAS */
-#define SYS_GLO     0x04                /* navigation system: GLONASS */
-#define SYS_GAL     0x08                /* navigation system: Galileo */
-#define SYS_QZS     0x10                /* navigation system: QZSS */
-#define SYS_CMP     0x20                /* navigation system: BeiDou */
-#define SYS_LEO     0x40                /* navigation system: LEO */
-#define SYS_ALL     0xFF                /* navigation system: all */
+enum NAVIGATION_SYSTEM{
+ SYS_NONE =    0x00,                /* navigation system: none */
+ SYS_GPS  =    0x01,                /* navigation system: GPS */
+ SYS_SBS  =    0x02,                /* navigation system: SBAS */
+ SYS_GLO  =    0x04,                /* navigation system: GLONASS */
+ SYS_GAL  =    0x08,                /* navigation system: Galileo */
+ SYS_QZS  =    0x10,                /* navigation system: QZSS */
+ SYS_CMP  =    0x20,                /* navigation system: BeiDou */
+ SYS_LEO  =    0x40,                /* navigation system: LEO */
+ SYS_ALL  =    0xFF                /* navigation system: all */
+};
 
-#define TSYS_GPS    0                   /* time system: GPS time */
-#define TSYS_UTC    1                   /* time system: UTC */
-#define TSYS_GLO    2                   /* time system: GLONASS time */
-#define TSYS_GAL    3                   /* time system: Galileo time */
-#define TSYS_QZS    4                   /* time system: QZSS time */
-#define TSYS_CMP    5                   /* time system: BeiDou time */
+enum TIME_SYSTEM{
+ TSYS_GPS = 0,                   /* time system: GPS time */
+ TSYS_UTC = 1,                   /* time system: UTC */
+ TSYS_GLO = 2,                   /* time system: GLONASS time */
+ TSYS_GAL = 3,                   /* time system: Galileo time */
+ TSYS_QZS = 4,                   /* time system: QZSS time */
+ TSYS_CMP = 5                   /* time system: BeiDou time */
+};
+
+enum TIME_SYSTEM2{
+ TIMES_GPST = 0,                   /* time system: gps time */
+ TIMES_UTC  = 1,                   /* time system: utc */
+ TIMES_JST  = 2                    /* time system: jst */
+};
 
 #ifndef NFREQ
 #define NFREQ       3                   /* number of carrier frequencies */
@@ -247,96 +257,104 @@ extern "C" {
 #define FREQTYPE_L8 0x20                /* frequency type: E5(a+b) */
 #define FREQTYPE_ALL 0xFF               /* frequency type: all */
 
-#define CODE_NONE   0                   /* obs code: none or unknown */
-#define CODE_L1C    1                   /* obs code: L1C/A,G1C/A,E1C (GPS,GLO,GAL,QZS,SBS) */
-#define CODE_L1P    2                   /* obs code: L1P,G1P    (GPS,GLO) */
-#define CODE_L1W    3                   /* obs code: L1 Z-track (GPS) */
-#define CODE_L1Y    4                   /* obs code: L1Y        (GPS) */
-#define CODE_L1M    5                   /* obs code: L1M        (GPS) */
-#define CODE_L1N    6                   /* obs code: L1codeless (GPS) */
-#define CODE_L1S    7                   /* obs code: L1C(D)     (GPS,QZS) */
-#define CODE_L1L    8                   /* obs code: L1C(P)     (GPS,QZS) */
-#define CODE_L1E    9                   /* obs code: L1-SAIF    (QZS) */
-#define CODE_L1A    10                  /* obs code: E1A        (GAL) */
-#define CODE_L1B    11                  /* obs code: E1B        (GAL) */
-#define CODE_L1X    12                  /* obs code: E1B+C,L1C(D+P) (GAL,QZS) */
-#define CODE_L1Z    13                  /* obs code: E1A+B+C,L1SAIF (GAL,QZS) */
-#define CODE_L2C    14                  /* obs code: L2C/A,G1C/A (GPS,GLO) */
-#define CODE_L2D    15                  /* obs code: L2 L1C/A-(P2-P1) (GPS) */
-#define CODE_L2S    16                  /* obs code: L2C(M)     (GPS,QZS) */
-#define CODE_L2L    17                  /* obs code: L2C(L)     (GPS,QZS) */
-#define CODE_L2X    18                  /* obs code: L2C(M+L),B1I+Q (GPS,QZS,CMP) */
-#define CODE_L2P    19                  /* obs code: L2P,G2P    (GPS,GLO) */
-#define CODE_L2W    20                  /* obs code: L2 Z-track (GPS) */
-#define CODE_L2Y    21                  /* obs code: L2Y        (GPS) */
-#define CODE_L2M    22                  /* obs code: L2M        (GPS) */
-#define CODE_L2N    23                  /* obs code: L2codeless (GPS) */
-#define CODE_L5I    24                  /* obs code: L5/E5aI    (GPS,GAL,QZS,SBS) */
-#define CODE_L5Q    25                  /* obs code: L5/E5aQ    (GPS,GAL,QZS,SBS) */
-#define CODE_L5X    26                  /* obs code: L5/E5aI+Q  (GPS,GAL,QZS,SBS) */
-#define CODE_L7I    27                  /* obs code: E5bI,B2I   (GAL,CMP) */
-#define CODE_L7Q    28                  /* obs code: E5bQ,B2Q   (GAL,CMP) */
-#define CODE_L7X    29                  /* obs code: E5bI+Q,B2I+Q (GAL,CMP) */
-#define CODE_L6A    30                  /* obs code: E6A        (GAL) */
-#define CODE_L6B    31                  /* obs code: E6B        (GAL) */
-#define CODE_L6C    32                  /* obs code: E6C        (GAL) */
-#define CODE_L6X    33                  /* obs code: E6B+C,LEXS+L,B3I+Q (GAL,QZS,CMP) */
-#define CODE_L6Z    34                  /* obs code: E6A+B+C    (GAL) */
-#define CODE_L6S    35                  /* obs code: LEXS       (QZS) */
-#define CODE_L6L    36                  /* obs code: LEXL       (QZS) */
-#define CODE_L8I    37                  /* obs code: E5(a+b)I   (GAL) */
-#define CODE_L8Q    38                  /* obs code: E5(a+b)Q   (GAL) */
-#define CODE_L8X    39                  /* obs code: E5(a+b)I+Q (GAL) */
-#define CODE_L2I    40                  /* obs code: B1I        (CMP) */
-#define CODE_L2Q    41                  /* obs code: B1Q        (CMP) */
-#define CODE_L6I    42                  /* obs code: B3I        (CMP) */
-#define CODE_L6Q    43                  /* obs code: B3Q        (CMP) */
-#define CODE_L3I    44                  /* obs code: G3I        (GLO) */
-#define CODE_L3Q    45                  /* obs code: G3Q        (GLO) */
-#define CODE_L3X    46                  /* obs code: G3I+Q      (GLO) */
-#define CODE_L1I    47                  /* obs code: B1I        (BDS) */
-#define CODE_L1Q    48                  /* obs code: B1Q        (BDS) */
-#define MAXCODE     48                  /* max number of obs code */
+enum OBSERVATION_CODE{
+ CODE_NONE = 0 ,                  /* obs code: none or unknown */
+ CODE_L1C  = 1 ,                  /* obs code: L1C/A,G1C/A,E1C (GPS,GLO,GAL,QZS,SBS) */
+ CODE_L1P  = 2 ,                  /* obs code: L1P,G1P    (GPS,GLO) */
+ CODE_L1W  = 3 ,                  /* obs code: L1 Z-track (GPS) */
+ CODE_L1Y  = 4 ,                  /* obs code: L1Y        (GPS) */
+ CODE_L1M  = 5 ,                  /* obs code: L1M        (GPS) */
+ CODE_L1N  = 6 ,                  /* obs code: L1codeless (GPS) */
+ CODE_L1S  = 7 ,                  /* obs code: L1C(D)     (GPS,QZS) */
+ CODE_L1L  = 8 ,                  /* obs code: L1C(P)     (GPS,QZS) */
+ CODE_L1E  = 9 ,                  /* obs code: L1-SAIF    (QZS) */
+ CODE_L1A  = 10,                  /* obs code: E1A        (GAL) */
+ CODE_L1B  = 11,                  /* obs code: E1B        (GAL) */
+ CODE_L1X  = 12,                  /* obs code: E1B+C,L1C(D+P) (GAL,QZS) */
+ CODE_L1Z  = 13,                  /* obs code: E1A+B+C,L1SAIF (GAL,QZS) */
+ CODE_L2C  = 14,                  /* obs code: L2C/A,G1C/A (GPS,GLO) */
+ CODE_L2D  = 15,                  /* obs code: L2 L1C/A-(P2-P1) (GPS) */
+ CODE_L2S  = 16,                  /* obs code: L2C(M)     (GPS,QZS) */
+ CODE_L2L  = 17,                  /* obs code: L2C(L)     (GPS,QZS) */
+ CODE_L2X  = 18,                  /* obs code: L2C(M+L),B1I+Q (GPS,QZS,CMP) */
+ CODE_L2P  = 19,                  /* obs code: L2P,G2P    (GPS,GLO) */
+ CODE_L2W  = 20,                  /* obs code: L2 Z-track (GPS) */
+ CODE_L2Y  = 21,                  /* obs code: L2Y        (GPS) */
+ CODE_L2M  = 22,                  /* obs code: L2M        (GPS) */
+ CODE_L2N  = 23,                  /* obs code: L2codeless (GPS) */
+ CODE_L5I  = 24,                  /* obs code: L5/E5aI    (GPS,GAL,QZS,SBS) */
+ CODE_L5Q  = 25,                  /* obs code: L5/E5aQ    (GPS,GAL,QZS,SBS) */
+ CODE_L5X  = 26,                  /* obs code: L5/E5aI+Q  (GPS,GAL,QZS,SBS) */
+ CODE_L7I  = 27,                  /* obs code: E5bI,B2I   (GAL,CMP) */
+ CODE_L7Q  = 28,                  /* obs code: E5bQ,B2Q   (GAL,CMP) */
+ CODE_L7X  = 29,                  /* obs code: E5bI+Q,B2I+Q (GAL,CMP) */
+ CODE_L6A  = 30,                  /* obs code: E6A        (GAL) */
+ CODE_L6B  = 31,                  /* obs code: E6B        (GAL) */
+ CODE_L6C  = 32,                  /* obs code: E6C        (GAL) */
+ CODE_L6X  = 33,                  /* obs code: E6B+C,LEXS+L,B3I+Q (GAL,QZS,CMP) */
+ CODE_L6Z  = 34,                  /* obs code: E6A+B+C    (GAL) */
+ CODE_L6S  = 35,                  /* obs code: LEXS       (QZS) */
+ CODE_L6L  = 36,                  /* obs code: LEXL       (QZS) */
+ CODE_L8I  = 37,                  /* obs code: E5(a+b)I   (GAL) */
+ CODE_L8Q  = 38,                  /* obs code: E5(a+b)Q   (GAL) */
+ CODE_L8X  = 39,                  /* obs code: E5(a+b)I+Q (GAL) */
+ CODE_L2I  = 40,                  /* obs code: B1I        (CMP) */
+ CODE_L2Q  = 41,                  /* obs code: B1Q        (CMP) */
+ CODE_L6I  = 42,                  /* obs code: B3I        (CMP) */
+ CODE_L6Q  = 43,                  /* obs code: B3Q        (CMP) */
+ CODE_L3I  = 44,                  /* obs code: G3I        (GLO) */
+ CODE_L3Q  = 45,                  /* obs code: G3Q        (GLO) */
+ CODE_L3X  = 46,                  /* obs code: G3I+Q      (GLO) */
+ CODE_L1I  = 47,                  /* obs code: B1I        (BDS) */
+ CODE_L1Q  = 48,                  /* obs code: B1Q        (BDS) */
+ MAXCODE   = 48                  /* max number of obs code */
+};
 
-#define PMODE_SINGLE 0                  /* positioning mode: single */
-#define PMODE_DGPS   1                  /* positioning mode: DGPS/DGNSS */
-#define PMODE_KINEMA 2                  /* positioning mode: kinematic */
-#define PMODE_STATIC 3                  /* positioning mode: static */
-#define PMODE_MOVEB  4                  /* positioning mode: moving-base */
-#define PMODE_FIXED  5                  /* positioning mode: fixed */
-#define PMODE_PPP_KINEMA 6              /* positioning mode: PPP-kinemaric */
-#define PMODE_PPP_STATIC 7              /* positioning mode: PPP-static */
-#define PMODE_PPP_FIXED 8               /* positioning mode: PPP-fixed */
+enum POSITIONING_MODE{
+ PMODE_SINGLE     = 0,                  /* positioning mode: single */
+ PMODE_DGPS       = 1,                  /* positioning mode: DGPS/DGNSS */
+ PMODE_KINEMA     = 2,                  /* positioning mode: kinematic */
+ PMODE_STATIC     = 3,                  /* positioning mode: static */
+ PMODE_MOVEB      = 4,                  /* positioning mode: moving-base */
+ PMODE_FIXED      = 5,                  /* positioning mode: fixed */
+ PMODE_PPP_KINEMA = 6,              /* positioning mode: PPP-kinemaric */
+ PMODE_PPP_STATIC = 7,              /* positioning mode: PPP-static */
+ PMODE_PPP_FIXED  = 8               /* positioning mode: PPP-fixed */
+};
 
-#define SOLF_LLH    0                   /* solution format: lat/lon/height */
-#define SOLF_XYZ    1                   /* solution format: x/y/z-ecef */
-#define SOLF_ENU    2                   /* solution format: e/n/u-baseline */
-#define SOLF_NMEA   3                   /* solution format: NMEA-183 */
-#define SOLF_GSIF   4                   /* solution format: GSI-F1/2/3 */
+enum SOLUTION_FORMAT{
+ SOLF_LLH  =0,                   /* solution format: lat/lon/height */
+ SOLF_XYZ  =1,                   /* solution format: x/y/z-ecef */
+ SOLF_ENU  =2,                   /* solution format: e/n/u-baseline */
+ SOLF_NMEA =3,                   /* solution format: NMEA-183 */
+ SOLF_GSIF =4                    /* solution format: GSI-F1/2/3 */
+};
 
-#define SOLQ_NONE   0                   /* solution status: no solution */
-#define SOLQ_FIX    1                   /* solution status: fix */
-#define SOLQ_FLOAT  2                   /* solution status: float */
-#define SOLQ_SBAS   3                   /* solution status: SBAS */
-#define SOLQ_DGPS   4                   /* solution status: DGPS/DGNSS */
-#define SOLQ_SINGLE 5                   /* solution status: single */
-#define SOLQ_PPP    6                   /* solution status: PPP */
-#define SOLQ_DR     7                   /* solution status: dead reconing */
-#define MAXSOLQ     7                   /* max number of solution status */
+enum SOLUTION_STATUS{
+ SOLQ_NONE   = 0,                   /* solution status: no solution */
+ SOLQ_FIX    = 1,                   /* solution status: fix */
+ SOLQ_FLOAT  = 2,                   /* solution status: float */
+ SOLQ_SBAS   = 3,                   /* solution status: SBAS */
+ SOLQ_DGPS   = 4,                   /* solution status: DGPS/DGNSS */
+ SOLQ_SINGLE = 5,                   /* solution status: single */
+ SOLQ_PPP    = 6,                   /* solution status: PPP */
+ SOLQ_DR     = 7                    /* solution status: dead reconing */
+};
+#define  MAXSOLQ 7                  /* max number of solution status */
 
-#define TIMES_GPST  0                   /* time system: gps time */
-#define TIMES_UTC   1                   /* time system: utc */
-#define TIMES_JST   2                   /* time system: jst */
 
-#define IONOOPT_OFF 0                   /* ionosphere option: correction off */
-#define IONOOPT_BRDC 1                  /* ionosphere option: broadcast model */
-#define IONOOPT_SBAS 2                  /* ionosphere option: SBAS model */
-#define IONOOPT_IFLC 3                  /* ionosphere option: L1/L2 or L1/L5 iono-free LC */
-#define IONOOPT_EST 4                   /* ionosphere option: estimation */
-#define IONOOPT_TEC 5                   /* ionosphere option: IONEX TEC model */
-#define IONOOPT_QZS 6                   /* ionosphere option: QZSS broadcast model */
-#define IONOOPT_LEX 7                   /* ionosphere option: QZSS LEX ionospehre */
-#define IONOOPT_STEC 8                  /* ionosphere option: SLANT TEC model */
+
+enum IONOSPHERE_OPTIONS{
+ IONOOPT_OFF  = 0,                  /* ionosphere option: correction off */
+ IONOOPT_BRDC = 1,                  /* ionosphere option: broadcast model */
+ IONOOPT_SBAS = 2,                  /* ionosphere option: SBAS model */
+ IONOOPT_IFLC = 3,                  /* ionosphere option: L1/L2 or L1/L5 iono-free LC */
+ IONOOPT_EST  = 4,                  /* ionosphere option: estimation */
+ IONOOPT_TEC  = 5,                  /* ionosphere option: IONEX TEC model */
+ IONOOPT_QZS  = 6,                  /* ionosphere option: QZSS broadcast model */
+ IONOOPT_LEX  = 7,                  /* ionosphere option: QZSS LEX ionospehre */
+ IONOOPT_STEC = 8                  /* ionosphere option: SLANT TEC model */
+};
 
 #define TROPOPT_OFF 0                   /* troposphere option: correction off */
 #define TROPOPT_SAAS 1                  /* troposphere option: Saastamoinen model */

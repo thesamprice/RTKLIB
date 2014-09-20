@@ -12,3 +12,5 @@ $(EXEC): $(OBJ)
 
 %.o: %.c
 	@$(CC) $(CC_FLAGS) $(INC) -c  $< -o $@ 
+clean:
+	$(RM) src/*.o
