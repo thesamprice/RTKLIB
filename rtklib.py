@@ -3435,7 +3435,36 @@ readrnx (const char *file, int rcv, const char *opt, obs_t *obs,
 rtklib.readrnxt.argtypes = [ctypes.POINTER(ctypes.c_char),ctypes.c_int,gtime_t,gtime_t,ctypes.c_double,ctypes.POINTER(ctypes.c_char),ctypes.POINTER(obs_t),ctypes.POINTER(nav_t),ctypes.POINTER(sta_t)]
 rtklib.readrnxt.restype = ctypes.c_int
 def readrnxt(file,rcv,ts,te,tint,opt,obs,nav,sta):
-  """
+  """/*!
+* @brief read rinex obs and nav files
+* args   : char *file    I      file (wild-card * expanded) ("": stdin)
+*          int   rcv     I      receiver number for obs data
+*         (gtime_t ts)   I      observation time start (ts.time==0: no limit)
+*         (gtime_t te)   I      observation time end   (te.time==0: no limit)
+*         (double tint)  I      observation time interval (s) (0:all)
+*          char  *opt    I      rinex options (see below,"": no option)
+*          obs_t *obs    IO     observation data   (NULL: no input)
+*          nav_t *nav    IO     navigation data    (NULL: no input)
+*          sta_t *sta    IO     station parameters (NULL: no input)
+* return : status (1:ok,0:no data,-1:error)
+* notes  : read data are appended to obs and nav struct
+*          before calling the function, obs and nav should be initialized.
+*          observation data and navigation data are not sorted.
+*          navigation data may be duplicated.
+*          call sortobs() or uniqnav() to sort data or delete duplicated eph.
+*
+*          rinex options (separated by spaces) :
+*
+*            -GLss[=shift]: select GPS signal ss (ss: RINEX 3 code, "1C","2W"...)
+*            -RLss[=shift]: select GLO signal ss
+*            -ELss[=shift]: select GAL signal ss
+*            -JLss[=shift]: select QZS signal ss
+*            -CLss[=shift]: select BDS signal ss
+*            -SLss[=shift]: select SBS signal ss
+*
+*            shift: carrier phase shift to be added (cycle)
+*
+*-----------------------------------------------------------------------------*/
 readrnxt(const char *file, int rcv, gtime_t ts, gtime_t te,
                     double tint, const char *opt, obs_t *obs, nav_t *nav,
                     sta_t *sta)"""
