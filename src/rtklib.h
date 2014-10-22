@@ -45,6 +45,10 @@
 extern "C" {
 #endif
 
+#ifdef PYTHON_INTERFACE
+#define FILE void
+#endif
+
 /* constants -----------------------------------------------------------------*/
 
 #define VER_RTKLIB  "2.4.3"             /* library version */
@@ -1308,11 +1312,29 @@ extern int  filter(double *x, double *P, const double *H, const double *v,
 extern int  smoother(const double *xf, const double *Qf, const double *xb,
                      const double *Qb, int n, double *xs, double *Qs);
 extern void matprint (const double *A, int n, int m, int p, int q);
-/*!
-* @skip
-*/
+
 extern void matfprint(const double *A, int n, int m, int p, int q, FILE *fp);
 
+/*!
+* @brief FILE* pointer for python interface
+* @param filename
+*   @brief Filename of the file to be opened.
+* @param mode
+*   @brief Flags for opening the file, ie "w", "a", "r"
+* @return
+*    @brief File pointer
+*/
+FILE* openfile(const char* filename, const char * mode );
+
+/*!
+* @brief FILE* pointer for python interface
+* @param filename
+*   @brief File pointer of the file to be closed
+* @return
+*    @brief status code, 0=success, +num=warnings,-num=errors
+*    @status
+*/
+int closefile(FILE*file);
 /* time and string functions -------------------------------------------------*/
 extern double  str2num(const char *s, int i, int n);
 extern int     str2time(const char *s, int i, int n, gtime_t *t);
@@ -1479,55 +1501,73 @@ extern int jgd2tokyo(double *pos);
 /* rinex functions -----------------------------------------------------------*/
 extern int readrnx (const char *file, int rcv, const char *opt, obs_t *obs,
                     nav_t *nav, sta_t *sta);
+/*!
+* @brief read rinex obs and nav files
+* args   : char *file    I      file (wild-card * expanded) ("": stdin)
+*          int   rcv     I      receiver number for obs data
+*         (gtime_t ts)   I      observation time start (ts.time==0: no limit)
+*         (gtime_t te)   I      observation time end   (te.time==0: no limit)
+*         (double tint)  I      observation time interval (s) (0:all)
+*          char  *opt    I      rinex options (see below,"": no option)
+*          obs_t *obs    IO     observation data   (NULL: no input)
+*          nav_t *nav    IO     navigation data    (NULL: no input)
+*          sta_t *sta    IO     station parameters (NULL: no input)
+* return : status (1:ok,0:no data,-1:error)
+* notes  : read data are appended to obs and nav struct
+*          before calling the function, obs and nav should be initialized.
+*          observation data and navigation data are not sorted.
+*          navigation data may be duplicated.
+*          call sortobs() or uniqnav() to sort data or delete duplicated eph.
+*
+*          rinex options (separated by spaces) :
+*
+*            -GLss[=shift]: select GPS signal ss (ss: RINEX 3 code, "1C","2W"...)
+*            -RLss[=shift]: select GLO signal ss
+*            -ELss[=shift]: select GAL signal ss
+*            -JLss[=shift]: select QZS signal ss
+*            -CLss[=shift]: select BDS signal ss
+*            -SLss[=shift]: select SBS signal ss
+*
+*            shift: carrier phase shift to be added (cycle)
+*
+*-----------------------------------------------------------------------------*/
 extern int readrnxt(const char *file, int rcv, gtime_t ts, gtime_t te,
                     double tint, const char *opt, obs_t *obs, nav_t *nav,
                     sta_t *sta);
 extern int readrnxc(const char *file, nav_t *nav);
-/*!
-* @skip
-*/
+
 extern int outrnxobsh(FILE *fp, const rnxopt_t *opt, const nav_t *nav);
-/*!
-* @skip
-*/
-extern int outrnxobsb(FILE *fp, const rnxopt_t *opt, const obsd_t *obs, int n,
-                      int epflag);
-/*!
-* @skip
-*/
-extern int outrnxnavh (FILE *fp, const rnxopt_t *opt, const nav_t *nav);
-/*!
-* @skip
-*/
-extern int outrnxgnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav);
-/*!
-* @skip
-*/
-extern int outrnxhnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav);
-/*!
-* @skip
-*/
-extern int outrnxlnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav);
-/*!
-* @skip
-*/
-extern int outrnxqnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav);
 
 /*!
-* @skip
-*/
+* output rinex obs body -------------------------------------------------------
+* output rinex obs body
+* args   : FILE   *fp       I   output file pointer
+*          rnxopt_t *opt    I   rinex options
+*          obsd_t *obs      I   observation data
+*          int    n         I   number of observation data
+*          int    flag      I   epoch flag (0:ok,1:power failure,>1:event flag)
+* return : status (1:ok, 0:output error)
+*-----------------------------------------------------------------------------*/
+extern int outrnxobsb(FILE *fp, const rnxopt_t *opt, const obsd_t *obs, int n,
+                      int epflag);
+
+extern int outrnxnavh (FILE *fp, const rnxopt_t *opt, const nav_t *nav);
+
+extern int outrnxgnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav);
+
+extern int outrnxhnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav);
+
+extern int outrnxlnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav);
+
+extern int outrnxqnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav);
+
+
 extern int outrnxcnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav);
-/*!
-* @skip
-*/
+
 extern int outrnxnavb (FILE *fp, const rnxopt_t *opt, const eph_t *eph);
-/*!
-* @skip
-*/
+
 extern int outrnxgnavb(FILE *fp, const rnxopt_t *opt, const geph_t *geph);
-/*!
-* @skip
-*/
+
 extern int outrnxhnavb(FILE *fp, const rnxopt_t *opt, const seph_t *seph);
 extern int uncompress(const char *file, char *uncfile);
 extern int convrnx(int format, rnxopt_t *opt, const char *file, char **ofile);
@@ -1591,9 +1631,7 @@ extern int decode_bds_d2(const unsigned char *buff, eph_t *eph);
 extern int init_raw   (raw_t *raw);
 extern void free_raw  (raw_t *raw);
 extern int input_raw  (raw_t *raw, int format, unsigned char data);
-/*!
-* @skip
-*/
+
 extern int input_rawf (raw_t *raw, int format, FILE *fp);
 
 extern int input_oem4  (raw_t *raw, unsigned char data);
@@ -1608,53 +1646,28 @@ extern int input_nvs   (raw_t *raw, unsigned char data);
 extern int input_bnx   (raw_t *raw, unsigned char data);
 extern int input_rt17  (raw_t *raw, unsigned char data);
 extern int input_lexr  (raw_t *raw, unsigned char data);
-/*!
-* @skip
-*/
+
 extern int input_oem4f (raw_t *raw, FILE *fp);
-/*!
-* @skip
-*/
+
 extern int input_oem3f (raw_t *raw, FILE *fp);
-/*!
-* @skip
-*/
 extern int input_ubxf  (raw_t *raw, FILE *fp);
-/*!
-* @skip
-*/
+
 extern int input_ss2f  (raw_t *raw, FILE *fp);
-/*!
-* @skip
-*/
+
 extern int input_cresf (raw_t *raw, FILE *fp);
-/*!
-* @skip
-*/
+
 extern int input_stqf  (raw_t *raw, FILE *fp);
-/*!
-* @skip
-*/
+
 extern int input_gw10f (raw_t *raw, FILE *fp);
-/*!
-* @skip
-*/
+
 extern int input_javadf(raw_t *raw, FILE *fp);
-/*!
-* @skip
-*/
+
 extern int input_nvsf  (raw_t *raw, FILE *fp);
-/*!
-* @skip
-*/
+
 extern int input_bnxf  (raw_t *raw, FILE *fp);
-/*!
-* @skip
-*/
+
 extern int input_rt17f (raw_t *raw, FILE *fp);
-/*!
-* @skip
-*/
+
 extern int input_lexrf (raw_t *raw, FILE *fp);
 
 extern int gen_ubx (const char *msg, unsigned char *buff);
@@ -1667,13 +1680,9 @@ extern int init_rtcm   (rtcm_t *rtcm);
 extern void free_rtcm  (rtcm_t *rtcm);
 extern int input_rtcm2 (rtcm_t *rtcm, unsigned char data);
 extern int input_rtcm3 (rtcm_t *rtcm, unsigned char data);
-/*!
-* @skip
-*/
+
 extern int input_rtcm2f(rtcm_t *rtcm, FILE *fp);
-/*!
-* @skip
-*/
+
 extern int input_rtcm3f(rtcm_t *rtcm, FILE *fp);
 extern int gen_rtcm2   (rtcm_t *rtcm, int type, int sync);
 extern int gen_rtcm3   (rtcm_t *rtcm, int type, int sync);

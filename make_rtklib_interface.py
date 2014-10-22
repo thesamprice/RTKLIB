@@ -1,8 +1,9 @@
 args ="""-c -g3 -fPIC -O3 -D__ix86__ -D_ix86_ -D_MAC_OS_ -DMACOSX -D_REENTRANT -D_EMBED_ -DSOFTWARE -DTRACK_L2C"""
 
-args+="-I./src"
-args+="-I./pysys"
-args+="-I/opt/local/include"
+args+=" -I./src"
+args+=" -I./pysys"
+args+=" -I/opt/local/include"
+args+=" -DPYTHON_INTERFACE "
 
 filename = "./src/rtklib.h"
 

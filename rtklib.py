@@ -241,7 +241,7 @@ pcv_t{        /* antenna parameter type */
                  ("ts"          , gtime_t ),
                  ("te"          , gtime_t ),
                  ("off"         , (ctypes.c_double * 3) * 3 ),
-                 ("var"         , (ctypes.c_double * 3) * 19 )]
+                 ("var"         , (ctypes.c_double * 19) * 3 )]
     def SetConstants(self):
         pass
 
@@ -407,12 +407,12 @@ peph_t{        /* precise ephemeris type */
     _fields_ = [ ("time"       , gtime_t ),
                  ("index"      , ctypes.c_int ),
                  ("pad_160_32" , ctypes.c_ubyte   * 4 ),
-                 ("pos"        , (ctypes.c_double * 55) * 4 ),
-                 ("std"        , (ctypes.c_float  * 55) * 4 ),
-                 ("vel"        , (ctypes.c_double * 55) * 4 ),
-                 ("vst"        , (ctypes.c_float  * 55) * 4 ),
-                 ("cov"        , (ctypes.c_float  * 55) * 3 ),
-                 ("vco"        , (ctypes.c_float  * 55) * 3 )]
+                 ("pos"        , (ctypes.c_double * 4) * 55 ),
+                 ("std"        , (ctypes.c_float  * 4) * 55 ),
+                 ("vel"        , (ctypes.c_double * 4) * 55 ),
+                 ("vst"        , (ctypes.c_float  * 4) * 55 ),
+                 ("cov"        , (ctypes.c_float  * 3) * 55 ),
+                 ("vco"        , (ctypes.c_float  * 3) * 55 )]
     def SetConstants(self):
         pass
 
@@ -430,8 +430,8 @@ pclk_t{        /* precise clock type */
     _fields_ = [ ("time"        , gtime_t ),
                  ("index"       , ctypes.c_int ),
                  ("pad_160_32"  , ctypes.c_ubyte   * 4 ),
-                 ("clk"         , (ctypes.c_double * 55) * 1 ),
-                 ("std"         , (ctypes.c_float  * 55) * 1 ),
+                 ("clk"         , (ctypes.c_double * 1) * 55 ),
+                 ("std"         , (ctypes.c_float  * 1) * 55 ),
                  ("pad_5472_32" , ctypes.c_ubyte   * 4 )]
     def SetConstants(self):
         pass
@@ -950,7 +950,7 @@ lexion_t{        /* QZSS LEX ionosphere correction type */
     _fields_ = [ ("t0"    , gtime_t ),
                  ("tspan" , ctypes.c_double ),
                  ("pos0"  , ctypes.c_double  * 2 ),
-                 ("coef"  , (ctypes.c_double * 3) * 2 )]
+                 ("coef"  , (ctypes.c_double * 2) * 3 )]
     def SetConstants(self):
         pass
 
@@ -1038,8 +1038,8 @@ nav_t{        /* navigation data type */
                  ("ion_cmp"      , ctypes.c_double  * 8 ),
                  ("leaps"        , ctypes.c_int ),
                  ("pad_4512_32"  , ctypes.c_ubyte   * 4 ),
-                 ("lam"          , (ctypes.c_double * 55) * 3 ),
-                 ("cbias"        , (ctypes.c_double * 55) * 3 ),
+                 ("lam"          , (ctypes.c_double * 3) * 55 ),
+                 ("cbias"        , (ctypes.c_double * 3) * 55 ),
                  ("wlbias"       , ctypes.c_double  * 55 ),
                  ("glo_cpbias"   , ctypes.c_double  * 4 ),
                  ("glo_fcn"      , ctypes.c_char    * 1 ),
@@ -1254,14 +1254,14 @@ rtcm_t{        /* RTCM control struct type */
                  ("ssr"            , ssr_t            * 55 ),
                  ("msg"            , ctypes.c_char    * 128 ),
                  ("msgtype"        , ctypes.c_char    * 256 ),
-                 ("msmtype"        , (ctypes.c_char   * 6) * 128 ),
+                 ("msmtype"        , (ctypes.c_char   * 128) * 6 ),
                  ("obsflag"        , ctypes.c_int ),
                  ("ephsat"         , ctypes.c_int ),
-                 ("cp"             , (ctypes.c_double * 55) * 3 ),
-                 ("lock"           , (ctypes.c_ubyte  * 55) * 3 ),
-                 ("loss"           , (ctypes.c_ubyte  * 55) * 3 ),
+                 ("cp"             , (ctypes.c_double * 3) * 55 ),
+                 ("lock"           , (ctypes.c_ubyte  * 3) * 55 ),
+                 ("loss"           , (ctypes.c_ubyte  * 3) * 55 ),
                  ("pad_1493712_48" , ctypes.c_ubyte   * 6 ),
-                 ("lltime"         , (gtime_t         * 55) * 3 ),
+                 ("lltime"         , (gtime_t         * 3) * 55 ),
                  ("nbyte"          , ctypes.c_int ),
                  ("nbit"           , ctypes.c_int ),
                  ("len"            , ctypes.c_int ),
@@ -1297,7 +1297,7 @@ rnxctr_t{        /* rinex control struct type */
                  ("pad_200_24"     , ctypes.c_ubyte  * 3 ),
                  ("sys"            , ctypes.c_int ),
                  ("tsys"           , ctypes.c_int ),
-                 ("tobs"           , ((ctypes.c_char * 6) * 64) * 4 ),
+                 ("tobs"           , ((ctypes.c_char * 4) * 64) * 6 ),
                  ("pad_12576_32"   , ctypes.c_ubyte  * 4 ),
                  ("obs"            , obs_t ),
                  ("nav"            , nav_t ),
@@ -1358,8 +1358,8 @@ exterr_t{        /* extended receiver error model */
     _pack_ = 1
 
     _fields_ = [ ("ena"     , ctypes.c_int     * 4 ),
-                 ("cerr"    , (ctypes.c_double * 4) * 6 ),
-                 ("perr"    , (ctypes.c_double * 4) * 6 ),
+                 ("cerr"    , (ctypes.c_double * 6) * 4 ),
+                 ("perr"    , (ctypes.c_double * 6) * 4 ),
                  ("gpsglob" , ctypes.c_double  * 3 ),
                  ("gloicb"  , ctypes.c_double  * 3 )]
     def SetConstants(self):
@@ -1375,7 +1375,7 @@ snrmask_t{        /* SNR mask type */
     _pack_ = 1
 
     _fields_ = [ ("ena"  , ctypes.c_int     * 2 ),
-                 ("mask" , (ctypes.c_double * 3) * 9 )]
+                 ("mask" , (ctypes.c_double * 9) * 3 )]
     def SetConstants(self):
         pass
 
@@ -1477,16 +1477,16 @@ prcopt_t{        /* processing options type */
                  ("baseline"     , ctypes.c_double  * 2 ),
                  ("ru"           , ctypes.c_double  * 3 ),
                  ("rb"           , ctypes.c_double  * 3 ),
-                 ("anttype"      , (ctypes.c_char   * 2) * 64 ),
-                 ("antdel"       , (ctypes.c_double * 2) * 3 ),
+                 ("anttype"      , (ctypes.c_char   * 64) * 2 ),
+                 ("antdel"       , (ctypes.c_double * 3) * 2 ),
                  ("pcvr"         , pcv_t            * 2 ),
                  ("exsats"       , ctypes.c_ubyte   * 55 ),
-                 ("rnxopt"       , (ctypes.c_char   * 2) * 256 ),
+                 ("rnxopt"       , (ctypes.c_char   * 256) * 2 ),
                  ("pad_21880_8"  , ctypes.c_ubyte ),
                  ("posopt"       , ctypes.c_int     * 6 ),
                  ("syncsol"      , ctypes.c_int ),
                  ("pad_22112_32" , ctypes.c_ubyte   * 4 ),
-                 ("odisp"        , (ctypes.c_double * 2) * 66 ),
+                 ("odisp"        , (ctypes.c_double * 66) * 2 ),
                  ("exterr"       , exterr_t )]
     def SetConstants(self):
         pass
@@ -1616,20 +1616,20 @@ rnxopt_t{        /* RINEX options type */
                  ("navsys"       , ctypes.c_int ),
                  ("obstype"      , ctypes.c_int ),
                  ("freqtype"     , ctypes.c_int ),
-                 ("mask"         , (ctypes.c_char  * 6) * 64 ),
+                 ("mask"         , (ctypes.c_char  * 64) * 6 ),
                  ("staid"        , ctypes.c_char   * 32 ),
                  ("prog"         , ctypes.c_char   * 32 ),
                  ("runby"        , ctypes.c_char   * 32 ),
                  ("marker"       , ctypes.c_char   * 64 ),
                  ("markerno"     , ctypes.c_char   * 32 ),
                  ("markertype"   , ctypes.c_char   * 32 ),
-                 ("name"         , (ctypes.c_char  * 2) * 32 ),
-                 ("rec"          , (ctypes.c_char  * 3) * 32 ),
-                 ("ant"          , (ctypes.c_char  * 3) * 32 ),
+                 ("name"         , (ctypes.c_char  * 32) * 2 ),
+                 ("rec"          , (ctypes.c_char  * 32) * 3 ),
+                 ("ant"          , (ctypes.c_char  * 32) * 3 ),
                  ("pad_7456_32"  , ctypes.c_ubyte  * 4 ),
                  ("apppos"       , ctypes.c_double * 3 ),
                  ("antdel"       , ctypes.c_double * 3 ),
-                 ("comment"      , (ctypes.c_char  * 10) * 64 ),
+                 ("comment"      , (ctypes.c_char  * 64) * 10 ),
                  ("rcvopt"       , ctypes.c_char   * 256 ),
                  ("exsats"       , ctypes.c_ubyte  * 55 ),
                  ("pad_15480_8"  , ctypes.c_ubyte ),
@@ -1642,7 +1642,7 @@ rnxopt_t{        /* RINEX options type */
                  ("tstart"       , gtime_t ),
                  ("tend"         , gtime_t ),
                  ("trtcm"        , gtime_t ),
-                 ("tobs"         , ((ctypes.c_char * 6) * 64) * 4 ),
+                 ("tobs"         , ((ctypes.c_char * 4) * 64) * 6 ),
                  ("nobs"         , ctypes.c_int    * 6 )]
     def SetConstants(self):
         pass
@@ -1690,8 +1690,8 @@ ssat_t{        /* satellite status type */
                  ("gf"          , ctypes.c_double ),
                  ("gf2"         , ctypes.c_double ),
                  ("phw"         , ctypes.c_double ),
-                 ("pt"          , (gtime_t         * 2) * 3 ),
-                 ("ph"          , (ctypes.c_double * 2) * 3 )]
+                 ("pt"          , (gtime_t         * 3) * 2 ),
+                 ("ph"          , (ctypes.c_double * 3) * 2 )]
     def SetConstants(self):
         pass
 
@@ -1805,16 +1805,16 @@ raw_t{        /* receiver raw data control type */
                  ("ephsat"         , ctypes.c_int ),
                  ("sbsmsg"         , sbsmsg_t ),
                  ("msgtype"        , ctypes.c_char    * 256 ),
-                 ("subfrm"         , (ctypes.c_ubyte  * 55) * 380 ),
+                 ("subfrm"         , (ctypes.c_ubyte  * 380) * 55 ),
                  ("lexmsg"         , lexmsg_t ),
                  ("pad_1452576_32" , ctypes.c_ubyte   * 4 ),
-                 ("lockt"          , (ctypes.c_double * 55) * 3 ),
+                 ("lockt"          , (ctypes.c_double * 3) * 55 ),
                  ("icpp"           , ctypes.c_double  * 55 ),
                  ("off"            , ctypes.c_double  * 55 ),
                  ("icpc"           , ctypes.c_double ),
                  ("prCA"           , ctypes.c_double  * 55 ),
                  ("dpCA"           , ctypes.c_double  * 55 ),
-                 ("halfc"          , (ctypes.c_ubyte  * 55) * 3 ),
+                 ("halfc"          , (ctypes.c_ubyte  * 3) * 55 ),
                  ("freqn"          , ctypes.c_char    * 64 ),
                  ("pad_1479144_24" , ctypes.c_ubyte   * 3 ),
                  ("nbyte"          , ctypes.c_int ),
@@ -2019,12 +2019,12 @@ rtksvr_t{        /* RTK server type */
                  ("sbuf"            , ctypes.c_void_p * 2 ),
                  ("pbuf"            , ctypes.c_void_p * 3 ),
                  ("solbuf"          , sol_t           * 256 ),
-                 ("nmsg"            , (ctypes.c_uint  * 3) * 10 ),
+                 ("nmsg"            , (ctypes.c_uint  * 10) * 3 ),
                  ("raw"             , raw_t           * 3 ),
                  ("rtcm"            , rtcm_t          * 3 ),
                  ("ftime"           , gtime_t         * 3 ),
-                 ("files"           , (ctypes.c_char  * 3) * 1024 ),
-                 ("obs"             , (obs_t          * 3) * 128 ),
+                 ("files"           , (ctypes.c_char  * 1024) * 3 ),
+                 ("obs"             , (obs_t          * 128) * 3 ),
                  ("nav"             , nav_t ),
                  ("sbsmsg"          , sbsmsg_t        * 32 ),
                  ("stream"          , stream_t        * 8 ),
@@ -2035,21 +2035,6 @@ rtksvr_t{        /* RTK server type */
                  ("cputime"         , ctypes.c_int ),
                  ("prcout"          , ctypes.c_int ),
                  ("lock"            , _opaque_pthread_mutex_t )]
-    def SetConstants(self):
-        pass
-
-
-class __sbuf (my_endian):
-    """
-__sbuf {
-	unsigned char	*_base;
-	int		_size;
-}"""
-    _pack_ = 1
-
-    _fields_ = [ ("_base"     , ctypes.POINTER(ctypes.c_uint64) ),
-                 ("_size"     , ctypes.c_int ),
-                 ("pad_96_32" , ctypes.c_ubyte * 4 )]
     def SetConstants(self):
         pass
 
@@ -2351,6 +2336,61 @@ matprint (const double *A, int n, int m, int p, int q)"""
   result = rtklib.matprint(A,n,m,p,q)
 
 
+  return result
+
+rtklib.matfprint.argtypes = [ctypes.POINTER(ctypes.c_double),ctypes.c_int,ctypes.c_int,ctypes.c_int,ctypes.c_int,ctypes.POINTER(None)]
+rtklib.matfprint.restype = None
+def matfprint(A,n,m,p,q,fp):
+  """
+matfprint(const double *A, int n, int m, int p, int q, FILE *fp)"""
+
+  result = rtklib.matfprint(A,n,m,p,q,fp)
+
+
+  return result
+
+rtklib.openfile.argtypes = [ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_char)]
+rtklib.openfile.restype = ctypes.POINTER(None)
+def openfile(filename,mode):
+  """/*!
+* @brief FILE* pointer for python interface
+* @param filename
+*   @brief Filename of the file to be opened.
+* @param mode
+*   @brief Flags for opening the file, ie "w", "a", "r"
+* @return
+*    @brief File pointer
+*/
+openfile(const char* filename, const char * mode )"""
+
+  result = rtklib.openfile(filename,mode)
+
+
+  return result
+
+rtklib.closefile.argtypes = [ctypes.POINTER(None)]
+rtklib.closefile.restype = ctypes.c_int
+def closefile(file):
+  """/*!
+* @brief FILE* pointer for python interface
+* @param filename
+*   @brief File pointer of the file to be closed
+* @return
+*    @brief status code, 0=success, +num=warnings,-num=errors
+*    @status
+*/
+closefile(FILE*file)"""
+
+  result = rtklib.closefile(file)
+
+
+
+  if (result < 0):
+    er = 'rtklib:neg_{val}'.format(val=abs(result))
+    raise Exception(er)
+  elif(result > 0):
+    er = 'rtklib:pos_{val}'.format(val=abs(result))
+    warnings.warn(er)
   return result
 
 rtklib.str2num.argtypes = [ctypes.POINTER(ctypes.c_char),ctypes.c_int,ctypes.c_int]
@@ -3497,6 +3537,203 @@ readrnxc(const char *file, nav_t *nav)"""
 
   return result
 
+rtklib.outrnxobsh.argtypes = [ctypes.POINTER(None),ctypes.POINTER(rnxopt_t),ctypes.POINTER(nav_t)]
+rtklib.outrnxobsh.restype = ctypes.c_int
+def outrnxobsh(fp,opt,nav):
+  """
+outrnxobsh(FILE *fp, const rnxopt_t *opt, const nav_t *nav)"""
+
+  if(type(opt) == rnxopt_t):
+    opt = ctypes.byref(opt)
+
+  if(type(nav) == nav_t):
+    nav = ctypes.byref(nav)
+
+  result = rtklib.outrnxobsh(fp,opt,nav)
+
+
+  return result
+
+rtklib.outrnxobsb.argtypes = [ctypes.POINTER(None),ctypes.POINTER(rnxopt_t),ctypes.POINTER(obsd_t),ctypes.c_int,ctypes.c_int]
+rtklib.outrnxobsb.restype = ctypes.c_int
+def outrnxobsb(fp,opt,obs,n,epflag):
+  """/*!
+* output rinex obs body -------------------------------------------------------
+* output rinex obs body
+* args   : FILE   *fp       I   output file pointer
+*          rnxopt_t *opt    I   rinex options
+*          obsd_t *obs      I   observation data
+*          int    n         I   number of observation data
+*          int    flag      I   epoch flag (0:ok,1:power failure,>1:event flag)
+* return : status (1:ok, 0:output error)
+*-----------------------------------------------------------------------------*/
+outrnxobsb(FILE *fp, const rnxopt_t *opt, const obsd_t *obs, int n,
+                      int epflag)"""
+
+  if(type(opt) == rnxopt_t):
+    opt = ctypes.byref(opt)
+
+  if(type(obs) == obsd_t):
+    obs = ctypes.byref(obs)
+
+  result = rtklib.outrnxobsb(fp,opt,obs,n,epflag)
+
+
+  return result
+
+rtklib.outrnxnavh.argtypes = [ctypes.POINTER(None),ctypes.POINTER(rnxopt_t),ctypes.POINTER(nav_t)]
+rtklib.outrnxnavh.restype = ctypes.c_int
+def outrnxnavh(fp,opt,nav):
+  """
+outrnxnavh (FILE *fp, const rnxopt_t *opt, const nav_t *nav)"""
+
+  if(type(opt) == rnxopt_t):
+    opt = ctypes.byref(opt)
+
+  if(type(nav) == nav_t):
+    nav = ctypes.byref(nav)
+
+  result = rtklib.outrnxnavh(fp,opt,nav)
+
+
+  return result
+
+rtklib.outrnxgnavh.argtypes = [ctypes.POINTER(None),ctypes.POINTER(rnxopt_t),ctypes.POINTER(nav_t)]
+rtklib.outrnxgnavh.restype = ctypes.c_int
+def outrnxgnavh(fp,opt,nav):
+  """
+outrnxgnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav)"""
+
+  if(type(opt) == rnxopt_t):
+    opt = ctypes.byref(opt)
+
+  if(type(nav) == nav_t):
+    nav = ctypes.byref(nav)
+
+  result = rtklib.outrnxgnavh(fp,opt,nav)
+
+
+  return result
+
+rtklib.outrnxhnavh.argtypes = [ctypes.POINTER(None),ctypes.POINTER(rnxopt_t),ctypes.POINTER(nav_t)]
+rtklib.outrnxhnavh.restype = ctypes.c_int
+def outrnxhnavh(fp,opt,nav):
+  """
+outrnxhnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav)"""
+
+  if(type(opt) == rnxopt_t):
+    opt = ctypes.byref(opt)
+
+  if(type(nav) == nav_t):
+    nav = ctypes.byref(nav)
+
+  result = rtklib.outrnxhnavh(fp,opt,nav)
+
+
+  return result
+
+rtklib.outrnxlnavh.argtypes = [ctypes.POINTER(None),ctypes.POINTER(rnxopt_t),ctypes.POINTER(nav_t)]
+rtklib.outrnxlnavh.restype = ctypes.c_int
+def outrnxlnavh(fp,opt,nav):
+  """
+outrnxlnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav)"""
+
+  if(type(opt) == rnxopt_t):
+    opt = ctypes.byref(opt)
+
+  if(type(nav) == nav_t):
+    nav = ctypes.byref(nav)
+
+  result = rtklib.outrnxlnavh(fp,opt,nav)
+
+
+  return result
+
+rtklib.outrnxqnavh.argtypes = [ctypes.POINTER(None),ctypes.POINTER(rnxopt_t),ctypes.POINTER(nav_t)]
+rtklib.outrnxqnavh.restype = ctypes.c_int
+def outrnxqnavh(fp,opt,nav):
+  """
+outrnxqnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav)"""
+
+  if(type(opt) == rnxopt_t):
+    opt = ctypes.byref(opt)
+
+  if(type(nav) == nav_t):
+    nav = ctypes.byref(nav)
+
+  result = rtklib.outrnxqnavh(fp,opt,nav)
+
+
+  return result
+
+rtklib.outrnxcnavh.argtypes = [ctypes.POINTER(None),ctypes.POINTER(rnxopt_t),ctypes.POINTER(nav_t)]
+rtklib.outrnxcnavh.restype = ctypes.c_int
+def outrnxcnavh(fp,opt,nav):
+  """
+outrnxcnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav)"""
+
+  if(type(opt) == rnxopt_t):
+    opt = ctypes.byref(opt)
+
+  if(type(nav) == nav_t):
+    nav = ctypes.byref(nav)
+
+  result = rtklib.outrnxcnavh(fp,opt,nav)
+
+
+  return result
+
+rtklib.outrnxnavb.argtypes = [ctypes.POINTER(None),ctypes.POINTER(rnxopt_t),ctypes.POINTER(eph_t)]
+rtklib.outrnxnavb.restype = ctypes.c_int
+def outrnxnavb(fp,opt,eph):
+  """
+outrnxnavb (FILE *fp, const rnxopt_t *opt, const eph_t *eph)"""
+
+  if(type(opt) == rnxopt_t):
+    opt = ctypes.byref(opt)
+
+  if(type(eph) == eph_t):
+    eph = ctypes.byref(eph)
+
+  result = rtklib.outrnxnavb(fp,opt,eph)
+
+
+  return result
+
+rtklib.outrnxgnavb.argtypes = [ctypes.POINTER(None),ctypes.POINTER(rnxopt_t),ctypes.POINTER(geph_t)]
+rtklib.outrnxgnavb.restype = ctypes.c_int
+def outrnxgnavb(fp,opt,geph):
+  """
+outrnxgnavb(FILE *fp, const rnxopt_t *opt, const geph_t *geph)"""
+
+  if(type(opt) == rnxopt_t):
+    opt = ctypes.byref(opt)
+
+  if(type(geph) == geph_t):
+    geph = ctypes.byref(geph)
+
+  result = rtklib.outrnxgnavb(fp,opt,geph)
+
+
+  return result
+
+rtklib.outrnxhnavb.argtypes = [ctypes.POINTER(None),ctypes.POINTER(rnxopt_t),ctypes.POINTER(seph_t)]
+rtklib.outrnxhnavb.restype = ctypes.c_int
+def outrnxhnavb(fp,opt,seph):
+  """
+outrnxhnavb(FILE *fp, const rnxopt_t *opt, const seph_t *seph)"""
+
+  if(type(opt) == rnxopt_t):
+    opt = ctypes.byref(opt)
+
+  if(type(seph) == seph_t):
+    seph = ctypes.byref(seph)
+
+  result = rtklib.outrnxhnavb(fp,opt,seph)
+
+
+  return result
+
 rtklib.uncompress.argtypes = [ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_char)]
 rtklib.uncompress.restype = ctypes.c_int
 def uncompress(file,uncfile):
@@ -4005,6 +4242,20 @@ input_raw  (raw_t *raw, int format, unsigned char data)"""
 
   return result
 
+rtklib.input_rawf.argtypes = [ctypes.POINTER(raw_t),ctypes.c_int,ctypes.POINTER(None)]
+rtklib.input_rawf.restype = ctypes.c_int
+def input_rawf(raw,format,fp):
+  """
+input_rawf (raw_t *raw, int format, FILE *fp)"""
+
+  if(type(raw) == raw_t):
+    raw = ctypes.byref(raw)
+
+  result = rtklib.input_rawf(raw,format,fp)
+
+
+  return result
+
 rtklib.input_oem4.argtypes = [ctypes.POINTER(raw_t),ctypes.c_ubyte]
 rtklib.input_oem4.restype = ctypes.c_int
 def input_oem4(raw,data):
@@ -4173,6 +4424,174 @@ input_lexr  (raw_t *raw, unsigned char data)"""
 
   return result
 
+rtklib.input_oem4f.argtypes = [ctypes.POINTER(raw_t),ctypes.POINTER(None)]
+rtklib.input_oem4f.restype = ctypes.c_int
+def input_oem4f(raw,fp):
+  """
+input_oem4f (raw_t *raw, FILE *fp)"""
+
+  if(type(raw) == raw_t):
+    raw = ctypes.byref(raw)
+
+  result = rtklib.input_oem4f(raw,fp)
+
+
+  return result
+
+rtklib.input_oem3f.argtypes = [ctypes.POINTER(raw_t),ctypes.POINTER(None)]
+rtklib.input_oem3f.restype = ctypes.c_int
+def input_oem3f(raw,fp):
+  """
+input_oem3f (raw_t *raw, FILE *fp)"""
+
+  if(type(raw) == raw_t):
+    raw = ctypes.byref(raw)
+
+  result = rtklib.input_oem3f(raw,fp)
+
+
+  return result
+
+rtklib.input_ubxf.argtypes = [ctypes.POINTER(raw_t),ctypes.POINTER(None)]
+rtklib.input_ubxf.restype = ctypes.c_int
+def input_ubxf(raw,fp):
+  """
+input_ubxf  (raw_t *raw, FILE *fp)"""
+
+  if(type(raw) == raw_t):
+    raw = ctypes.byref(raw)
+
+  result = rtklib.input_ubxf(raw,fp)
+
+
+  return result
+
+rtklib.input_ss2f.argtypes = [ctypes.POINTER(raw_t),ctypes.POINTER(None)]
+rtklib.input_ss2f.restype = ctypes.c_int
+def input_ss2f(raw,fp):
+  """
+input_ss2f  (raw_t *raw, FILE *fp)"""
+
+  if(type(raw) == raw_t):
+    raw = ctypes.byref(raw)
+
+  result = rtklib.input_ss2f(raw,fp)
+
+
+  return result
+
+rtklib.input_cresf.argtypes = [ctypes.POINTER(raw_t),ctypes.POINTER(None)]
+rtklib.input_cresf.restype = ctypes.c_int
+def input_cresf(raw,fp):
+  """
+input_cresf (raw_t *raw, FILE *fp)"""
+
+  if(type(raw) == raw_t):
+    raw = ctypes.byref(raw)
+
+  result = rtklib.input_cresf(raw,fp)
+
+
+  return result
+
+rtklib.input_stqf.argtypes = [ctypes.POINTER(raw_t),ctypes.POINTER(None)]
+rtklib.input_stqf.restype = ctypes.c_int
+def input_stqf(raw,fp):
+  """
+input_stqf  (raw_t *raw, FILE *fp)"""
+
+  if(type(raw) == raw_t):
+    raw = ctypes.byref(raw)
+
+  result = rtklib.input_stqf(raw,fp)
+
+
+  return result
+
+rtklib.input_gw10f.argtypes = [ctypes.POINTER(raw_t),ctypes.POINTER(None)]
+rtklib.input_gw10f.restype = ctypes.c_int
+def input_gw10f(raw,fp):
+  """
+input_gw10f (raw_t *raw, FILE *fp)"""
+
+  if(type(raw) == raw_t):
+    raw = ctypes.byref(raw)
+
+  result = rtklib.input_gw10f(raw,fp)
+
+
+  return result
+
+rtklib.input_javadf.argtypes = [ctypes.POINTER(raw_t),ctypes.POINTER(None)]
+rtklib.input_javadf.restype = ctypes.c_int
+def input_javadf(raw,fp):
+  """
+input_javadf(raw_t *raw, FILE *fp)"""
+
+  if(type(raw) == raw_t):
+    raw = ctypes.byref(raw)
+
+  result = rtklib.input_javadf(raw,fp)
+
+
+  return result
+
+rtklib.input_nvsf.argtypes = [ctypes.POINTER(raw_t),ctypes.POINTER(None)]
+rtklib.input_nvsf.restype = ctypes.c_int
+def input_nvsf(raw,fp):
+  """
+input_nvsf  (raw_t *raw, FILE *fp)"""
+
+  if(type(raw) == raw_t):
+    raw = ctypes.byref(raw)
+
+  result = rtklib.input_nvsf(raw,fp)
+
+
+  return result
+
+rtklib.input_bnxf.argtypes = [ctypes.POINTER(raw_t),ctypes.POINTER(None)]
+rtklib.input_bnxf.restype = ctypes.c_int
+def input_bnxf(raw,fp):
+  """
+input_bnxf  (raw_t *raw, FILE *fp)"""
+
+  if(type(raw) == raw_t):
+    raw = ctypes.byref(raw)
+
+  result = rtklib.input_bnxf(raw,fp)
+
+
+  return result
+
+rtklib.input_rt17f.argtypes = [ctypes.POINTER(raw_t),ctypes.POINTER(None)]
+rtklib.input_rt17f.restype = ctypes.c_int
+def input_rt17f(raw,fp):
+  """
+input_rt17f (raw_t *raw, FILE *fp)"""
+
+  if(type(raw) == raw_t):
+    raw = ctypes.byref(raw)
+
+  result = rtklib.input_rt17f(raw,fp)
+
+
+  return result
+
+rtklib.input_lexrf.argtypes = [ctypes.POINTER(raw_t),ctypes.POINTER(None)]
+rtklib.input_lexrf.restype = ctypes.c_int
+def input_lexrf(raw,fp):
+  """
+input_lexrf (raw_t *raw, FILE *fp)"""
+
+  if(type(raw) == raw_t):
+    raw = ctypes.byref(raw)
+
+  result = rtklib.input_lexrf(raw,fp)
+
+
+  return result
+
 rtklib.gen_ubx.argtypes = [ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_ubyte)]
 rtklib.gen_ubx.restype = ctypes.c_int
 def gen_ubx(msg,buff):
@@ -4269,6 +4688,34 @@ input_rtcm3 (rtcm_t *rtcm, unsigned char data)"""
     rtcm = ctypes.byref(rtcm)
 
   result = rtklib.input_rtcm3(rtcm,data)
+
+
+  return result
+
+rtklib.input_rtcm2f.argtypes = [ctypes.POINTER(rtcm_t),ctypes.POINTER(None)]
+rtklib.input_rtcm2f.restype = ctypes.c_int
+def input_rtcm2f(rtcm,fp):
+  """
+input_rtcm2f(rtcm_t *rtcm, FILE *fp)"""
+
+  if(type(rtcm) == rtcm_t):
+    rtcm = ctypes.byref(rtcm)
+
+  result = rtklib.input_rtcm2f(rtcm,fp)
+
+
+  return result
+
+rtklib.input_rtcm3f.argtypes = [ctypes.POINTER(rtcm_t),ctypes.POINTER(None)]
+rtklib.input_rtcm3f.restype = ctypes.c_int
+def input_rtcm3f(rtcm,fp):
+  """
+input_rtcm3f(rtcm_t *rtcm, FILE *fp)"""
+
+  if(type(rtcm) == rtcm_t):
+    rtcm = ctypes.byref(rtcm)
+
+  result = rtklib.input_rtcm3f(rtcm,fp)
 
 
   return result
@@ -5481,6 +5928,39 @@ dl_readstas(const char *file, char **stas, int nmax)"""
 
   return result
 
+rtklib.dl_exec.argtypes = [gtime_t,gtime_t,ctypes.c_double,ctypes.c_int,ctypes.c_int,ctypes.POINTER(url_t),ctypes.c_int,ctypes.POINTER(ctypes.c_void_p),ctypes.c_int,ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_char),ctypes.c_int,ctypes.POINTER(ctypes.c_char),ctypes.POINTER(None)]
+rtklib.dl_exec.restype = ctypes.c_int
+def dl_exec(ts,te,ti,seqnos,seqnoe,urls,nurl,stas,nsta,dir,usr,pwd,proxy,opts,msg,fp):
+  """
+dl_exec(gtime_t ts, gtime_t te, double ti, int seqnos, int seqnoe,
+                   const url_t *urls, int nurl, char **stas, int nsta,
+                   const char *dir, const char *usr, const char *pwd,
+                   const char *proxy, int opts, char *msg, FILE *fp)"""
+
+  if(type(urls) == url_t):
+    urls = ctypes.byref(urls)
+
+  result = rtklib.dl_exec(ts,te,ti,seqnos,seqnoe,urls,nurl,stas,nsta,dir,usr,pwd,proxy,opts,msg,fp)
+
+
+  return result
+
+rtklib.dl_test.argtypes = [gtime_t,gtime_t,ctypes.c_double,ctypes.POINTER(url_t),ctypes.c_int,ctypes.POINTER(ctypes.c_void_p),ctypes.c_int,ctypes.POINTER(ctypes.c_char),ctypes.c_int,ctypes.c_int,ctypes.POINTER(None)]
+rtklib.dl_test.restype = None
+def dl_test(ts,te,ti,urls,nurl,stas,nsta,dir,ncol,datefmt,fp):
+  """
+dl_test(gtime_t ts, gtime_t te, double ti, const url_t *urls,
+                    int nurl, char **stas, int nsta, const char *dir,
+                    int ncol, int datefmt, FILE *fp)"""
+
+  if(type(urls) == url_t):
+    urls = ctypes.byref(urls)
+
+  result = rtklib.dl_test(ts,te,ti,urls,nurl,stas,nsta,dir,ncol,datefmt,fp)
+
+
+  return result
+
 rtklib.showmsg.argtypes = [ctypes.POINTER(ctypes.c_char)]
 rtklib.showmsg.restype = ctypes.c_int
 def showmsg(format):
@@ -5544,6 +6024,20 @@ lexreadmsg(const char *file, int sel, lex_t *lex)"""
     lex = ctypes.byref(lex)
 
   result = rtklib.lexreadmsg(file,sel,lex)
+
+
+  return result
+
+rtklib.lexoutmsg.argtypes = [ctypes.POINTER(None),ctypes.POINTER(lexmsg_t)]
+rtklib.lexoutmsg.restype = None
+def lexoutmsg(fp,msg):
+  """
+lexoutmsg(FILE *fp, const lexmsg_t *msg)"""
+
+  if(type(msg) == lexmsg_t):
+    msg = ctypes.byref(msg)
+
+  result = rtklib.lexoutmsg(fp,msg)
 
 
   return result
