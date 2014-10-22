@@ -1842,13 +1842,18 @@ extern int outrnxobsh(FILE *fp, const rnxopt_t *opt, const nav_t *nav)
         fprintf(fp,"%10.3f%50s%-20s\n",opt->tint,"","INTERVAL");
     }
     time2epoch(opt->tstart,ep);
-    fprintf(fp,"  %04.0f%6.0f%6.0f%6.0f%6.0f%13.7f     %-12s%-20s\n",ep[0],
-            ep[1],ep[2],ep[3],ep[4],ep[5],tsys,"TIME OF FIRST OBS");
-    
+    if(ep[0] > 1970)
+    {
+        fprintf(fp,"  %04.0f%6.0f%6.0f%6.0f%6.0f%13.7f     %-12s%-20s\n",ep[0],
+                ep[1],ep[2],ep[3],ep[4],ep[5],tsys,"TIME OF FIRST OBS");
+    }
+
     time2epoch(opt->tend,ep);
-    fprintf(fp,"  %04.0f%6.0f%6.0f%6.0f%6.0f%13.7f     %-12s%-20s\n",ep[0],
-            ep[1],ep[2],ep[3],ep[4],ep[5],tsys,"TIME OF LAST OBS");
-    
+    if(ep[0] > 1970)
+    {
+        fprintf(fp,"  %04.0f%6.0f%6.0f%6.0f%6.0f%13.7f     %-12s%-20s\n",ep[0],
+                ep[1],ep[2],ep[3],ep[4],ep[5],tsys,"TIME OF LAST OBS");
+    }
     if (opt->rnxver>=3.01) { /* ver.3.01 */
         for (i=0;navsys[i];i++) {
             if (!(navsys[i]&opt->navsys)||!opt->nobs[i]) continue;
@@ -1947,6 +1952,16 @@ static int obsindex(double ver, int sys, const unsigned char *code,
     }
     return -1;
 }
+FILE* openfile(const char* filename, const char * mode )
+{
+    return fopen(filename,mode);
+}
+
+int closefile(FILE*file)
+{
+    return fclose(file);
+}
+
 /* output rinex obs body -------------------------------------------------------
 * output rinex obs body
 * args   : FILE   *fp       I   output file pointer
