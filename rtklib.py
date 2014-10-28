@@ -2303,14 +2303,14 @@ lsq   (const double *A, const double *y, int n, int m, double *x,
 
   return result
 
-rtklib.filter.argtypes = [ctypes.POINTER(ctypes.c_double),ctypes.POINTER(ctypes.c_double),ctypes.POINTER(ctypes.c_double),ctypes.POINTER(ctypes.c_double),ctypes.POINTER(ctypes.c_double),ctypes.c_int,ctypes.c_int]
-rtklib.filter.restype = ctypes.c_int
-def filter(x,P,H,v,R,n,m):
+rtklib.rtklib_filter.argtypes = [ctypes.POINTER(ctypes.c_double),ctypes.POINTER(ctypes.c_double),ctypes.POINTER(ctypes.c_double),ctypes.POINTER(ctypes.c_double),ctypes.POINTER(ctypes.c_double),ctypes.c_int,ctypes.c_int]
+rtklib.rtklib_filter.restype = ctypes.c_int
+def rtklib_filter(x,P,H,v,R,n,m):
   """
-filter(double *x, double *P, const double *H, const double *v,
+rtklib_filter(double *x, double *P, const double *H, const double *v,
                    const double *R, int n, int m)"""
 
-  result = rtklib.filter(x,P,H,v,R,n,m)
+  result = rtklib.rtklib_filter(x,P,H,v,R,n,m)
 
 
   return result
@@ -2971,13 +2971,13 @@ tracelevel(int level)"""
 
   return result
 
-rtklib.trace.argtypes = [ctypes.c_int,ctypes.POINTER(ctypes.c_char)]
-rtklib.trace.restype = None
-def trace(level,format):
+rtklib.rtklib_trace.argtypes = [ctypes.c_int,ctypes.POINTER(ctypes.c_char)]
+rtklib.rtklib_trace.restype = None
+def rtklib_trace(level,format):
   """
-trace    (int level, const char *format, ...)"""
+rtklib_trace    (int level, const char *format, ...)"""
 
-  result = rtklib.trace(level,format)
+  result = rtklib.rtklib_trace(level,format)
 
 
   return result
