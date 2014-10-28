@@ -244,7 +244,7 @@ static opt_t rcvopts[]={
 /* keyboard interrupt handler ------------------------------------------------*/
 static void sigint(int sig)
 {
-    trace(3,"sigint: sig=%d\n",sig);
+    rtklib_trace(3,"sigint: sig=%d\n",sig);
     
     intflg|=1;
     signal(sig,sigint); /* reset signal handler */
@@ -252,7 +252,7 @@ static void sigint(int sig)
 /* external stop signal ------------------------------------------------------*/
 static void sigshut(int sig)
 {
-    trace(3,"sigshut: sig=%d\n",sig);
+    rtklib_trace(3,"sigshut: sig=%d\n",sig);
     
     intflg|=2;
 }
@@ -265,13 +265,13 @@ static void chop(char *str)
 /* thread to send keep alive for monitor port --------------------------------*/
 static void *sendkeepalive(void *arg)
 {
-    trace(3,"sendkeepalive: start\n");
+    rtklib_trace(3,"sendkeepalive: start\n");
     
     while (keepalive) {
         strwrite(&moni,(unsigned char *)"\r",1);
         sleepms(INTKEEPALIVE);
     }
-    trace(3,"sendkeepalive: stop\n");
+    rtklib_trace(3,"sendkeepalive: stop\n");
     return NULL;
 }
 /* open monitor port ---------------------------------------------------------*/
@@ -280,7 +280,7 @@ static int openmoni(int port)
     pthread_t thread;
     char path[64];
     
-    trace(3,"openmomi: port=%d\n",port);
+    rtklib_trace(3,"openmomi: port=%d\n",port);
     
     sprintf(path,":%d",port);
     if (!stropen(&moni,STR_TCPSVR,STR_MODE_RW,path)) return 0;
@@ -292,7 +292,7 @@ static int openmoni(int port)
 /* close monitor port --------------------------------------------------------*/
 static void closemoni(void)
 {
-    trace(3,"closemoni:\n");
+    rtklib_trace(3,"closemoni:\n");
     keepalive=0;
     
     /* send disconnect message */
@@ -310,7 +310,7 @@ static int accsock(int port)
     socklen_t len=sizeof(addr);
     int ssock,sock,on=1;
     
-    trace(3,"accsock: port=%d\n",port);
+    rtklib_trace(3,"accsock: port=%d\n",port);
     
     if ((ssock=socket(AF_INET,SOCK_STREAM,0))<0) {
         fprintf(stderr,"socket error (%d)\n",errno);
@@ -343,7 +343,7 @@ static int telnetrsp(vt_t *vt, char *buff, int n)
     char *p=buff,msg[3]={IAC};
     int size=0;
     
-    trace(3,"telnetcmd: n=%d\n",n);
+    rtklib_trace(3,"telnetcmd: n=%d\n",n);
     
     buff[n]='\0';
     while ((p=strchr(p,IAC))&&p+1<buff+n) { /* IAC */
@@ -370,7 +370,7 @@ static int telnetrsp(vt_t *vt, char *buff, int n)
             size=2;
         }
         else {
-            trace(2,"unsupported cmd: IAC %d\n",(unsigned char)*(p+1));
+            rtklib_trace(2,"unsupported cmd: IAC %d\n",(unsigned char)*(p+1));
             fprintf(stderr,"unsupported cmd: IAC %d\n",(unsigned char)*(p+1));
             size=2;
         }
@@ -384,7 +384,7 @@ static int remoteecho(vt_t *vt, char *buff, int n)
 {
     const char bs[]={0x08,' ',0x08}; /* backspace seqence */
     
-    trace(3,"remoteecho: n=%d\n",n);
+    rtklib_trace(3,"remoteecho: n=%d\n",n);
     
     if (n<1) return 0;
     else if (buff[n-1]==DEL||buff[n-1]==BS) { /* del or backspace */
@@ -423,7 +423,7 @@ static void *inpsvrthread(void *arg)
     char buff[MAXBUFF];
     int n;
     
-    trace(3,"inpsvrthread: start\n");
+    rtklib_trace(3,"inpsvrthread: start\n");
     
     for (vt->state=1;vt->state;) {
         
@@ -448,7 +448,7 @@ static void *inpsvrthread(void *arg)
     close(vt->in); 
     pthread_cond_signal(&vt->event); /* release read wait */
     
-    trace(3,"inpsvrthread: stop\n");
+    rtklib_trace(3,"inpsvrthread: stop\n");
     return NULL;
 }
 /* open remote console -------------------------------------------------------*/
@@ -457,7 +457,7 @@ static int openremote(vt_t *vt, int port)
     const char charmode[]={IAC,WILL,SUPPGA,IAC,WILL,ECHO};
     int sock;
     
-    trace(3,"openremote: port=%d\n",port);
+    rtklib_trace(3,"openremote: port=%d\n",port);
     
     pthread_mutex_init(&vt->lock,NULL);
     pthread_cond_init(&vt->event,NULL);
@@ -472,7 +472,7 @@ static int openremote(vt_t *vt, int port)
     if (write(vt->out,charmode,6)<6) return 0;
     
     if (pthread_create(&vt->svr,NULL,inpsvrthread,vt)) {
-        trace(2,"pthread_create error (%d)\n",errno);
+        rtklib_trace(2,"pthread_create error (%d)\n",errno);
         close(sock);
         return 0;
     }
@@ -481,7 +481,7 @@ static int openremote(vt_t *vt, int port)
 /* close remote consoler -----------------------------------------------------*/
 static void closeremote(vt_t *vt)
 {
-    trace(3,"closeremote:\n");
+    rtklib_trace(3,"closeremote:\n");
     
     vt->state=0;
     pthread_kill(vt->svr,SIGINT);
@@ -492,7 +492,7 @@ static int readremote(vt_t *vt, char *buff, int nmax)
 {
     int n=0;
     
-    trace(4,"readremote:\n");
+    rtklib_trace(4,"readremote:\n");
     
     if (!vt->state) return 0;
     pthread_cond_wait(&vt->event,&vt->lock);
@@ -509,7 +509,7 @@ static int writeremote(vt_t *vt, char *buff, int n)
 {
     char *p,*q,crlf[]="\r\n";;
     
-    trace(4,"writeremote: n=%d\n",n);
+    rtklib_trace(4,"writeremote: n=%d\n",n);
     
     if (!vt->state) return 0;
     
@@ -528,7 +528,7 @@ static int openvt(vt_t *vt, int port, const char *dev)
 {
     int fd;
     
-    trace(3,"openvt: port=%d dev=%s\n",port,dev);
+    rtklib_trace(3,"openvt: port=%d dev=%s\n",port,dev);
     
     vt->type=vt->state=vt->nbuff=0;
     vt->in =STDIN_FILENO;
@@ -541,7 +541,7 @@ static int openvt(vt_t *vt, int port, const char *dev)
     else if (*dev) { /* serial */
         vt->type=2;
         if ((fd=open(dev,O_RDWR))<0) {
-            trace(2,"console device open error: %s\n",dev);
+            rtklib_trace(2,"console device open error: %s\n",dev);
             fprintf(stderr,"console device open error: %s\n",dev);
             return 0;
         }
@@ -553,7 +553,7 @@ static int openvt(vt_t *vt, int port, const char *dev)
 /* close console -------------------------------------------------------------*/
 static void closevt(vt_t *vt)
 {
-    trace(3,"closevt:\n");
+    rtklib_trace(3,"closevt:\n");
     
     if (vt->type==1) { /* remote console */
         closeremote(vt);
@@ -566,7 +566,7 @@ static void closevt(vt_t *vt)
 /* output to console ---------------------------------------------------------*/
 static int outvt(vt_t *vt, char *buff, int n)
 {
-    trace(4,"outvt: n=%d\n",n);
+    rtklib_trace(4,"outvt: n=%d\n",n);
     
     if (logfp) fwrite(buff,n,1,logfp);
     if (vt->type==1) return writeremote(vt,buff,n);
@@ -577,7 +577,7 @@ static int inpvt(vt_t *vt, char *buff, int nmax)
 {
     int n;
     
-    trace(4,"inpvt:\n");
+    rtklib_trace(4,"inpvt:\n");
     
     if (vt->type==1) n=readremote(vt,buff,nmax-1);
     else n=read(vt->in,buff,nmax-1);
@@ -597,7 +597,7 @@ static int printvt(vt_t *vt, const char *format, ...)
     int n;
     char buff[MAXSTR];
     
-    trace(4,"prvt:\n");
+    rtklib_trace(4,"prvt:\n");
     
     if (!vt->state) {
         va_start(ap,format);
@@ -629,7 +629,7 @@ static int login(vt_t *vt)
 {
     char buff[256];
     
-    trace(3,"login: passwd=%s type=%d\n",passwd,vt->type);
+    rtklib_trace(3,"login: passwd=%s type=%d\n",passwd,vt->type);
     
     if (!*passwd||vt->type==0) return 1;
     echomode=0;
@@ -651,7 +651,7 @@ static int readcmd(const char *file, char *cmd, int type)
     char buff[MAXSTR],*p=cmd;
     int i=0;
     
-    trace(3,"readcmd: file=%s\n",file);
+    rtklib_trace(3,"readcmd: file=%s\n",file);
     
     if (!(fp=fopen(file,"r"))) return 0;
     
@@ -673,7 +673,7 @@ static void readant(vt_t *vt, prcopt_t *opt, nav_t *nav)
     gtime_t time=timeget();
     int i;
     
-    trace(3,"readant:\n");
+    rtklib_trace(3,"readant:\n");
     
     opt->pcvr[0]=opt->pcvr[1]=pcv0;
     if (!*filopt.rcvantp) return;
@@ -712,7 +712,7 @@ static int startsvr(vt_t *vt)
     };
     int i,ret,stropt[8]={0};
     
-    trace(3,"startsvr:\n");
+    rtklib_trace(3,"startsvr:\n");
     
     /* read start commads from command files */
     for (i=0;i<3;i++) {
@@ -739,7 +739,7 @@ static int startsvr(vt_t *vt)
     
     /* open geoid data file */
     if (solopt[0].geoid>0&&!opengeoid(solopt[0].geoid,filopt.geoid)) {
-        trace(2,"geoid data open error: %s\n",filopt.geoid);
+        rtklib_trace(2,"geoid data open error: %s\n",filopt.geoid);
         printvt(vt,"geoid data open error: %s\n",filopt.geoid);
     }
     for (i=0;*rcvopts[i].name;i++) modflgr[i]=0;
@@ -761,7 +761,7 @@ static int startsvr(vt_t *vt)
     
     /* execute start command */
     if (*startcmd&&(ret=system(startcmd))) {
-        trace(2,"command exec error: %s (%d)\n",startcmd,ret);
+        rtklib_trace(2,"command exec error: %s (%d)\n",startcmd,ret);
         printvt(vt,"command exec error: %s (%d)\n",startcmd,ret);
     }
     solopt[0].posf=strfmt[3];
@@ -770,7 +770,7 @@ static int startsvr(vt_t *vt)
     /* start rtk server */
     if (!rtksvrstart(&svr,svrcycle,buffsize,strtype,paths,strfmt,navmsgsel,
                      cmds,ropts,nmeacycle,nmeareq,npos,&prcopt,solopt,&moni)) {
-        trace(2,"rtk server start error\n");
+        rtklib_trace(2,"rtk server start error\n");
         printvt(vt,"rtk server start error\n");
         return 0;
     }
@@ -782,7 +782,7 @@ static void stopsvr(vt_t *vt)
     char s[3][MAXRCVCMD]={"","",""},*cmds[]={NULL,NULL,NULL};
     int i,ret;
     
-    trace(3,"stopsvr:\n");
+    rtklib_trace(3,"stopsvr:\n");
     
     if (!svr.state) return;
     
@@ -799,7 +799,7 @@ static void stopsvr(vt_t *vt)
     
     /* execute stop command */
     if (*stopcmd&&(ret=system(stopcmd))) {
-        trace(2,"command exec error: %s (%d)\n",stopcmd,ret);
+        rtklib_trace(2,"command exec error: %s (%d)\n",stopcmd,ret);
         printvt(vt,"command exec error: %s (%d)\n",stopcmd,ret);
     }
     if (solopt[0].geoid>0) closegeoid();
@@ -831,7 +831,7 @@ static void prsolution(vt_t *vt, const sol_t *sol, const double *rb)
     double enu[3]={0},pitch=0.0,yaw=0.0,len;
     int i;
     
-    trace(4,"prsolution:\n");
+    rtklib_trace(4,"prsolution:\n");
     
     if (sol->time.time==0||!sol->stat) return;
     prtime(vt,sol->time);
@@ -935,7 +935,7 @@ static void prstatus(vt_t *vt)
     double runtime,rt[3]={0},dop[4]={0},rr[3],bl1=0.0,bl2=0.0;
     double azel[MAXSAT*2],pos[3],vel[3],*del;
     
-    trace(4,"prstatus:\n");
+    rtklib_trace(4,"prstatus:\n");
     
     rtksvrlock(&svr);
     rtk=svr.rtk;
@@ -1063,7 +1063,7 @@ static void prsatellite(vt_t *vt)
     char id[32];
     int i,j,fix;
     
-    trace(4,"prsatellite:\n");
+    rtklib_trace(4,"prsatellite:\n");
     
     rtksvrlock(&svr);
     rtk=svr.rtk;
@@ -1107,7 +1107,7 @@ static void probserv(vt_t *vt)
     char tstr[64],id[32];
     int i,j,n=0;
     
-    trace(4,"probserv:\n");
+    rtklib_trace(4,"probserv:\n");
     
     rtksvrlock(&svr);
     for (i=0;i<svr.obs[0][0].n&&n<MAXOBS*2;i++) {
@@ -1142,7 +1142,7 @@ static void prnavidata(vt_t *vt)
     char id[32],s1[64],s2[64],s3[64];
     int i,valid,prn,leaps;
     
-    trace(4,"prnavidata:\n");
+    rtklib_trace(4,"prnavidata:\n");
     
     rtksvrlock(&svr);
     time=svr.rtk.sol.time;
@@ -1189,7 +1189,7 @@ static void prerror(vt_t *vt)
 {
     int n;
     
-    trace(4,"prerror:\n");
+    rtklib_trace(4,"prerror:\n");
     
     rtksvrlock(&svr);
     if ((n=svr.rtk.neb)>0) {
@@ -1214,7 +1214,7 @@ static void prstream(vt_t *vt)
     stream_t stream[9];
     int i,format[9]={0};
     
-    trace(4,"prstream:\n");
+    rtklib_trace(4,"prstream:\n");
     
     rtksvrlock(&svr);
     for (i=0;i<8;i++) stream[i]=svr.stream[i];
@@ -1236,7 +1236,7 @@ static void prstream(vt_t *vt)
 /* start command -------------------------------------------------------------*/
 static void cmd_start(char **args, int narg, vt_t *vt)
 {
-    trace(3,"cmd_start:\n");
+    rtklib_trace(3,"cmd_start:\n");
     
     if (!startsvr(vt)) return;
     printvt(vt,"rtk server start\n");
@@ -1244,7 +1244,7 @@ static void cmd_start(char **args, int narg, vt_t *vt)
 /* stop command --------------------------------------------------------------*/
 static void cmd_stop(char **args, int narg, vt_t *vt)
 {
-    trace(3,"cmd_stop:\n");
+    rtklib_trace(3,"cmd_stop:\n");
     
     stopsvr(vt);
     printvt(vt,"rtk server stop\n");
@@ -1252,7 +1252,7 @@ static void cmd_stop(char **args, int narg, vt_t *vt)
 /* restart command -----------------------------------------------------------*/
 static void cmd_restart(char **args, int narg, vt_t *vt)
 {
-    trace(3,"cmd_restart:\n");
+    rtklib_trace(3,"cmd_restart:\n");
     
     stopsvr(vt);
     if (!startsvr(vt)) return;
@@ -1263,7 +1263,7 @@ static void cmd_solution(char **args, int narg, vt_t *vt)
 {
     int i,cycle=0;
     
-    trace(3,"cmd_solution:\n");
+    rtklib_trace(3,"cmd_solution:\n");
     
     if (narg>1) cycle=(int)(atof(args[1])*1000.0);
     
@@ -1282,7 +1282,7 @@ static void cmd_status(char **args, int narg, vt_t *vt)
 {
     int cycle=0;
     
-    trace(3,"cmd_status:\n");
+    rtklib_trace(3,"cmd_status:\n");
     
     if (narg>1) cycle=(int)(atof(args[1])*1000.0);
     
@@ -1297,7 +1297,7 @@ static void cmd_satellite(char **args, int narg, vt_t *vt)
 {
     int cycle=0;
     
-    trace(3,"cmd_satellite:\n");
+    rtklib_trace(3,"cmd_satellite:\n");
     
     if (narg>1) cycle=(int)(atof(args[1])*1000.0);
     
@@ -1312,7 +1312,7 @@ static void cmd_observ(char **args, int narg, vt_t *vt)
 {
     int cycle=0;
     
-    trace(3,"cmd_observ:\n");
+    rtklib_trace(3,"cmd_observ:\n");
     
     if (narg>1) cycle=(int)(atof(args[1])*1000.0);
     
@@ -1327,7 +1327,7 @@ static void cmd_navidata(char **args, int narg, vt_t *vt)
 {
     int cycle=0;
     
-    trace(3,"cmd_navidata:\n");
+    rtklib_trace(3,"cmd_navidata:\n");
     
     if (narg>1) cycle=(int)(atof(args[1])*1000.0);
     
@@ -1340,7 +1340,7 @@ static void cmd_navidata(char **args, int narg, vt_t *vt)
 /* error command -------------------------------------------------------------*/
 static void cmd_error(char **args, int narg, vt_t *vt)
 {
-    trace(3,"cmd_error:\n");
+    rtklib_trace(3,"cmd_error:\n");
     
     rtksvrlock(&svr);
     svr.rtk.neb=0;
@@ -1357,7 +1357,7 @@ static void cmd_stream(char **args, int narg, vt_t *vt)
 {
     int cycle=0;
     
-    trace(3,"cmd_stream:\n");
+    rtklib_trace(3,"cmd_stream:\n");
     
     if (narg>1) cycle=(int)(atof(args[1])*1000.0);
     
@@ -1373,7 +1373,7 @@ static void cmd_option(char **args, int narg, vt_t *vt)
     char buff[MAXSTR],*p;
     int i,n;
     
-    trace(3,"cmd_option:\n");
+    rtklib_trace(3,"cmd_option:\n");
     
     for (i=0;*rcvopts[i].name;i++) {
         if (narg>=2&&!strstr(rcvopts[i].name,args[1])) continue;
@@ -1405,7 +1405,7 @@ static void cmd_set(char **args, int narg, vt_t *vt)
     int *modf;
     char buff[MAXSTR];
     
-    trace(3,"cmd_set:\n");
+    rtklib_trace(3,"cmd_set:\n");
     
     if (narg<2) {
         printvt(vt,"specify option type\n");
@@ -1448,7 +1448,7 @@ static void cmd_load(char **args, int narg, vt_t *vt)
 {
     char file[MAXSTR]="";
     
-    trace(3,"cmd_load:\n");
+    rtklib_trace(3,"cmd_load:\n");
     
     if (narg>=2) {
         strcpy(file,args[1]);
@@ -1474,7 +1474,7 @@ static void cmd_save(char **args, int narg, vt_t *vt)
 {
     char file[MAXSTR]="",comment[256],s[64];
     
-    trace(3,"cmd_save:\n");
+    rtklib_trace(3,"cmd_save:\n");
     
     if (narg>=2) {
         strcpy(file,args[1]);
@@ -1495,7 +1495,7 @@ static void cmd_save(char **args, int narg, vt_t *vt)
 /* log command ---------------------------------------------------------------*/
 static void cmd_log(char **args, int narg, vt_t *vt)
 {
-    trace(3,"cmd_log:\n");
+    rtklib_trace(3,"cmd_log:\n");
     
     if (narg<2) {
         printvt(vt,"specify log file\n");
@@ -1562,7 +1562,7 @@ static void cmdshell(vt_t *vt)
     int i,j,narg;
     char buff[MAXCMD],*args[MAXARG],*p;
     
-    trace(3,"cmdshell:\n");
+    rtklib_trace(3,"cmdshell:\n");
     
     while (!(intflg&2)) {
         
@@ -1615,7 +1615,7 @@ static void cmdshell(vt_t *vt)
                 break;
         }
     }
-    trace(3,"cmdshell: exit\n");
+    rtklib_trace(3,"cmdshell: exit\n");
 }
 /* rtkrcv main -----------------------------------------------------------------
 * sysnopsis

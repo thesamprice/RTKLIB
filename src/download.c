@@ -292,7 +292,7 @@ static int mkdir_r(const char *dir)
     if (CreateDirectory(dir,NULL)||
         GetLastError()==ERROR_ALREADY_EXISTS) return 1;
     
-    trace(2,"directory generation error: dir=%s\n",dir);
+    rtklib_trace(2,"directory generation error: dir=%s\n",dir);
     return 0;
 #else
     FILE *fp;
@@ -309,7 +309,7 @@ static int mkdir_r(const char *dir)
     }
     if (!mkdir(dir,0777)||errno==EEXIST) return 1;
     
-    trace(2,"directory generation error: dir=%s\n",dir);
+    rtklib_trace(2,"directory generation error: dir=%s\n",dir);
     return 0;
 #endif
 }
@@ -393,7 +393,7 @@ static int exec_down(const path_t *path, char *remot_p, const char *usr,
     if      (!strncmp(path->remot,"ftp://" ,6)) proto=0;
     else if (!strncmp(path->remot,"http://",7)) proto=1;
     else {
-        trace(2,"exec_down: invalid path %s\n",path->remot);
+        rtklib_trace(2,"exec_down: invalid path %s\n",path->remot);
         showmsg("STAT=X");
         if (fp) fprintf(fp,"%s ERROR (INVALID PATH)\n",path->remot);
         n[1]++;
@@ -462,7 +462,7 @@ static int exec_down(const path_t *path, char *remot_p, const char *usr,
             n[1]++;
         }
         else {
-            trace(2,"exec_down: %s error %d\n",proto==0?"ftp":"http",ret);
+            rtklib_trace(2,"exec_down: %s error %d\n",proto==0?"ftp":"http",ret);
             showmsg("STAT=X");
             if (fp) fprintf(fp," ERROR (%d)\n",ret);
             n[3]++;
@@ -484,7 +484,7 @@ static int exec_down(const path_t *path, char *remot_p, const char *usr,
             remove(path->local);
         }
         else {
-            trace(2,"exec_down: uncompress error\n");
+            rtklib_trace(2,"exec_down: uncompress error\n");
             showmsg("STAT=C");
             if (fp) fprintf(fp," ERROR (UNCOMP)\n");
             n[3]++;

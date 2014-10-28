@@ -92,7 +92,7 @@ extern int decode_bds_d1(const unsigned char *buff, eph_t *eph)
     unsigned int toe1,toe2,sow1,sow2,sow3;
     int i,frn1,frn2,frn3;
     
-    trace(3,"decode_bds_d1:\n");
+    rtklib_trace(3,"decode_bds_d1:\n");
     
     i=8*38*0; /* subframe 1 */
     frn1       =getbitu (buff,i+ 15, 3);
@@ -138,15 +138,15 @@ extern int decode_bds_d1(const unsigned char *buff, eph_t *eph)
     
     /* check consistency of subframe numbers, sows and toe/toc */
     if (frn1!=1||frn2!=2||frn3!=3) {
-        trace(3,"decode_bds_d1 error: frn=%d %d %d\n",frn1,frn2,frn3);
+        rtklib_trace(3,"decode_bds_d1 error: frn=%d %d %d\n",frn1,frn2,frn3);
         return 0;
     }
     if (sow2!=sow1+6||sow3!=sow2+6) {
-        trace(3,"decode_bds_d1 error: sow=%d %d %d\n",sow1,sow2,sow3);
+        rtklib_trace(3,"decode_bds_d1 error: sow=%d %d %d\n",sow1,sow2,sow3);
         return 0;
     }
     if (toc_bds!=eph->toes) {
-        trace(3,"decode_bds_d1 error: toe=%.0f toc=%.0f\n",eph->toes,toc_bds);
+        rtklib_trace(3,"decode_bds_d1 error: toe=%.0f toc=%.0f\n",eph->toes,toc_bds);
         return 0;
     }
     eph->ttr=bdt2gpst(bdt2time(eph->week,sow1));      /* bdt -> gpst */
@@ -174,7 +174,7 @@ extern int decode_bds_d2(const unsigned char *buff, eph_t *eph)
     int i,f1p3,cucp4,ep5,cicp6,i0p7,OMGdp8,omgp9;
     int pgn1,pgn3,pgn4,pgn5,pgn6,pgn7,pgn8,pgn9,pgn10;
     
-    trace(3,"decode_bds_d2:\n");
+    rtklib_trace(3,"decode_bds_d2:\n");
     
     i=8*38*0; /* page 1 */
     pgn1       =getbitu (buff,i+ 42, 4);
@@ -250,18 +250,18 @@ extern int decode_bds_d2(const unsigned char *buff, eph_t *eph)
     /* check consistency of page numbers, sows and toe/toc */
     if (pgn1!=1||pgn3!=3||pgn4!=4||pgn5!=5||pgn6!=6||pgn7!=7||pgn8!=8||pgn9!=9||
         pgn10!=10) {
-        trace(3,"decode_bds_d2 error: pgn=%d %d %d %d %d %d %d %d %d\n",
+        rtklib_trace(3,"decode_bds_d2 error: pgn=%d %d %d %d %d %d %d %d %d\n",
               pgn1,pgn3,pgn4,pgn5,pgn6,pgn7,pgn8,pgn9,pgn10);
         return 0;
     }
     if (sow3!=sow1+6||sow4!=sow3+3||sow5!=sow4+3||sow6!=sow5+3||
         sow7!=sow6+3||sow8!=sow7+3||sow9!=sow8+3||sow10!=sow9+3) {
-        trace(3,"decode_bds_d2 error: sow=%d %d %d %d %d %d %d %d %d\n",
+        rtklib_trace(3,"decode_bds_d2 error: sow=%d %d %d %d %d %d %d %d %d\n",
               sow1,sow3,sow4,sow5,sow6,sow7,sow8,sow9,sow10);
         return 0;
     }
     if (toc_bds!=eph->toes) {
-        trace(3,"decode_bds_d2 error: toe=%.0f toc=%.0f\n",eph->toes,toc_bds);
+        rtklib_trace(3,"decode_bds_d2 error: toe=%.0f toc=%.0f\n",eph->toes,toc_bds);
         return 0;
     }
     eph->f1  =merge_two_s(f1p3  ,f1p4  ,18)*P2_50;
@@ -341,7 +341,7 @@ extern int decode_glostr(const unsigned char *buff, geph_t *geph)
     int P,P1,P2,P3,P4,tk_h,tk_m,tk_s,tb,ln,NT,slot,M,week;
     int i=1,frn1,frn2,frn3,frn4;
     
-    trace(3,"decode_glostr:\n");
+    rtklib_trace(3,"decode_glostr:\n");
     
     /* frame 1 */
     frn1        =getbitu(buff,i, 4);           i+= 4+2;
@@ -384,11 +384,11 @@ extern int decode_glostr(const unsigned char *buff, geph_t *geph)
     M           =getbitu(buff,i, 2);
     
     if (frn1!=1||frn2!=2||frn3!=3||frn4!=4) {
-        trace(3,"decode_glostr error: frn=%d %d %d %d %d\n",frn1,frn2,frn3,frn4);
+        rtklib_trace(3,"decode_glostr error: frn=%d %d %d %d %d\n",frn1,frn2,frn3,frn4);
         return 0;
     }
     if (!(geph->sat=satno(SYS_GLO,slot))) {
-        trace(2,"decode_glostr error: slot=%d\n",slot);
+        rtklib_trace(2,"decode_glostr error: slot=%d\n",slot);
         return 0;
     }
     geph->frq=0;
@@ -411,8 +411,8 @@ static int decode_subfrm1(const unsigned char *buff, eph_t *eph)
     double tow,toc;
     int i=48,week,iodc0,iodc1;
     
-    trace(4,"decode_subfrm1:\n");
-    trace(5,"decode_subfrm1: buff="); traceb(5,buff,30);
+    rtklib_trace(4,"decode_subfrm1:\n");
+    rtklib_trace(5,"decode_subfrm1: buff="); traceb(5,buff,30);
     
     tow        =getbitu(buff,24,17)*6.0;           /* transmission time */
     week       =getbitu(buff,i,10);       i+=10;
@@ -441,8 +441,8 @@ static int decode_subfrm2(const unsigned char *buff, eph_t *eph)
     double sqrtA;
     int i=48;
     
-    trace(4,"decode_subfrm2:\n");
-    trace(5,"decode_subfrm2: buff="); traceb(5,buff,30);
+    rtklib_trace(4,"decode_subfrm2:\n");
+    rtklib_trace(5,"decode_subfrm2: buff="); traceb(5,buff,30);
     
     eph->iode=getbitu(buff,i, 8);              i+= 8;
     eph->crs =getbits(buff,i,16)*P2_5;         i+=16;
@@ -465,8 +465,8 @@ static int decode_subfrm3(const unsigned char *buff, eph_t *eph)
     double tow,toc;
     int i=48,iode;
     
-    trace(4,"decode_subfrm3:\n");
-    trace(5,"decode_subfrm3: buff="); traceb(5,buff,30);
+    rtklib_trace(4,"decode_subfrm3:\n");
+    rtklib_trace(5,"decode_subfrm3: buff="); traceb(5,buff,30);
     
     eph->cic =getbits(buff,i,16)*P2_29;        i+=16;
     eph->OMG0=getbits(buff,i,32)*P2_31*SC2RAD; i+=32;
@@ -499,7 +499,7 @@ static void decode_almanac(const unsigned char *buff, alm_t *alm)
     double deltai,sqrtA,tt;
     int i=50,f0,sat=getbitu(buff,50,6);
     
-    trace(4,"decode_almanac: sat=%2d\n",sat);
+    rtklib_trace(4,"decode_almanac: sat=%2d\n",sat);
     
     if (!alm||sat<1||32<sat||alm[sat-1].week==0) return;
     
@@ -531,8 +531,8 @@ static int decode_subfrm4(const unsigned char *buff, alm_t *alm, double *ion,
 {
     int i,sat,svid=getbitu(buff,50,6);
     
-    trace(4,"decode_subfrm4: svid=%d\n",svid);
-    trace(5,"decode_subfrm4: buff="); traceb(5,buff,30);
+    rtklib_trace(4,"decode_subfrm4: svid=%d\n",svid);
+    rtklib_trace(5,"decode_subfrm4: buff="); traceb(5,buff,30);
     
     if (25<=svid&&svid<=32) { /* page 2,3,4,5,7,8,9,10 */
         
@@ -586,8 +586,8 @@ static int decode_subfrm5(const unsigned char *buff, alm_t *alm)
     double toas;
     int i,sat,week,svid=getbitu(buff,50,6);
     
-    trace(4,"decode_subfrm5: svid=%d\n",svid);
-    trace(5,"decode_subfrm5: buff="); traceb(5,buff,30);
+    rtklib_trace(4,"decode_subfrm5: svid=%d\n",svid);
+    rtklib_trace(5,"decode_subfrm5: buff="); traceb(5,buff,30);
     
     if (1<=svid&&svid<=24) { /* page 1-24 */
         
@@ -634,7 +634,7 @@ extern int decode_frame(const unsigned char *buff, eph_t *eph, alm_t *alm,
 {
     int id=getbitu(buff,43,3); /* subframe id */
     
-    trace(3,"decodefrm: id=%d\n",id);
+    rtklib_trace(3,"decodefrm: id=%d\n",id);
     
     switch (id) {
         case 1: return decode_subfrm1(buff,eph);
@@ -664,7 +664,7 @@ extern int init_raw(raw_t *raw)
     lexmsg_t lexmsg0={0};
     int i,j,sys;
     
-    trace(3,"init_raw:\n");
+    rtklib_trace(3,"init_raw:\n");
     
     raw->time=raw->tobs=time0;
     raw->ephsat=0;
@@ -737,7 +737,7 @@ extern int init_raw(raw_t *raw)
 *-----------------------------------------------------------------------------*/
 extern void free_raw(raw_t *raw)
 {
-    trace(3,"free_raw:\n");
+    rtklib_trace(3,"free_raw:\n");
     
     free(raw->obs.data ); raw->obs.data =NULL; raw->obs.n =0;
     free(raw->obuf.data); raw->obuf.data=NULL; raw->obuf.n=0;
@@ -757,7 +757,7 @@ extern void free_raw(raw_t *raw)
 *-----------------------------------------------------------------------------*/
 extern int input_raw(raw_t *raw, int format, unsigned char data)
 {
-    trace(5,"input_raw: format=%d data=0x%02x\n",format,data);
+    rtklib_trace(5,"input_raw: format=%d data=0x%02x\n",format,data);
     
     switch (format) {
         case STRFMT_OEM4 : return input_oem4 (raw,data);
@@ -784,7 +784,7 @@ extern int input_raw(raw_t *raw, int format, unsigned char data)
 *-----------------------------------------------------------------------------*/
 extern int input_rawf(raw_t *raw, int format, FILE *fp)
 {
-    trace(4,"input_rawf: format=%d\n",format);
+    rtklib_trace(4,"input_rawf: format=%d\n",format);
     
     switch (format) {
         case STRFMT_OEM4 : return input_oem4f (raw,fp);

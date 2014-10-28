@@ -3540,7 +3540,13 @@ readrnxc(const char *file, nav_t *nav)"""
 rtklib.outrnxobsh.argtypes = [ctypes.POINTER(None),ctypes.POINTER(rnxopt_t),ctypes.POINTER(nav_t)]
 rtklib.outrnxobsh.restype = ctypes.c_int
 def outrnxobsh(fp,opt,nav):
-  """
+  """/*! output rinex obs header -----------------------------------------------------
+* output rinex obd file header
+* args   : FILE   *fp       I   output file pointer
+*          rnxopt_t *opt    I   rinex options
+*          nav_t  *nav      I   navigation data
+* return : status (1:ok, 0:output error)
+*-----------------------------------------------------------------------------*/
 outrnxobsh(FILE *fp, const rnxopt_t *opt, const nav_t *nav)"""
 
   if(type(opt) == rnxopt_t):
@@ -4037,6 +4043,30 @@ tle_pos(gtime_t time, const char *name, const char *satno,
     erp = ctypes.byref(erp)
 
   result = rtklib.tle_pos(time,name,satno,desig,tle,erp,rs)
+
+
+  return result
+
+rtklib.seleph.argtypes = [gtime_t,ctypes.c_int,ctypes.c_int,ctypes.POINTER(nav_t)]
+rtklib.seleph.restype = ctypes.POINTER(eph_t)
+def seleph(time,sat,iode,nav):
+  """/*!
+*@brief Selects an ephemeris for a given time, sv
+*@param time
+*  @brief Ephemeris returned will be within 2 hours of this time
+*@param sat
+*  @brief Satellite SV number
+*@param iode
+*  @brief IODE, if a negative number is used then any iode may be selected.
+*@param nav
+*  @brief Database of ephemerides to search through.
+*/
+seleph(gtime_t time, int sat, int iode, const nav_t *nav)"""
+
+  if(type(nav) == nav_t):
+    nav = ctypes.byref(nav)
+
+  result = rtklib.seleph(time,sat,iode,nav)
 
 
   return result

@@ -96,7 +96,7 @@ static void rnx2opt(const rnxctr_t *rnx, rnxopt_t *opt)
     double pos[3],enu[3];
     int i;
     
-    trace(3,"rnx2opt:\n");
+    rtklib_trace(3,"rnx2opt:\n");
     
     /* receiver and antenna info */
     if (!*opt->marker&&!*opt->markerno) {
@@ -138,7 +138,7 @@ static void rtcm2opt(const rtcm_t *rtcm, rnxopt_t *opt)
     double pos[3],enu[3];
     int i;
     
-    trace(3,"rtcm2opt:\n");
+    rtklib_trace(3,"rtcm2opt:\n");
     
     /* comment */
     sprintf(opt->comment[1]+strlen(opt->comment[1]),", station ID: %d",
@@ -188,7 +188,7 @@ static strfile_t *gen_strfile(int format, const char *opt, gtime_t time)
 {
     strfile_t *str;
     
-    trace(3,"init_strfile:\n");
+    rtklib_trace(3,"init_strfile:\n");
     
     if (!(str=(strfile_t *)malloc(sizeof(strfile_t)))) return NULL;
     
@@ -229,7 +229,7 @@ static strfile_t *gen_strfile(int format, const char *opt, gtime_t time)
 /* free stream file ----------------------------------------------------------*/
 static void free_strfile(strfile_t *str)
 {
-    trace(3,"free_strfile:\n");
+    rtklib_trace(3,"free_strfile:\n");
     
     if (str->format==STRFMT_RTCM2||str->format==STRFMT_RTCM3) {
         free_rtcm(&str->rtcm);
@@ -247,7 +247,7 @@ static int input_strfile(strfile_t *str)
 {
     int type=0;
     
-    trace(4,"input_strfile:\n");
+    rtklib_trace(4,"input_strfile:\n");
     
     if (str->format==STRFMT_RTCM2) {
         if ((type=input_rtcm2f(&str->rtcm,str->fp))>=1) {
@@ -273,14 +273,14 @@ static int input_strfile(strfile_t *str)
             str->sat=str->rnx.ephsat;
         }
     }
-    trace(4,"input_strfile: time=%s type=%d sat=%2d\n",time_str(str->time,3),
+    rtklib_trace(4,"input_strfile: time=%s type=%d sat=%2d\n",time_str(str->time,3),
           type,str->sat);
     return type;
 }
 /* open stream file ----------------------------------------------------------*/
 static int open_strfile(strfile_t *str, const char *file)
 {
-    trace(3,"open_strfile: file=%s\n",file);
+    rtklib_trace(3,"open_strfile: file=%s\n",file);
     
     if (str->format==STRFMT_RTCM2||str->format==STRFMT_RTCM3) {
         if (!(str->fp=fopen(file,"rb"))) {
@@ -318,7 +318,7 @@ static int open_strfile(strfile_t *str, const char *file)
 /* close stream file ---------------------------------------------------------*/
 static void close_strfile(strfile_t *str)
 {
-    trace(3,"close_strfile:\n");
+    rtklib_trace(3,"close_strfile:\n");
     
     if (str->format==STRFMT_RTCM2||str->format==STRFMT_RTCM3) {
         if (str->fp) fclose(str->fp);
@@ -353,7 +353,7 @@ static void setopt_obstype(const unsigned char *codes,
     char type[16],*id;
     int i,j,k,freq;
     
-    trace(3,"setopt_obstype: sys=%d\n",sys);
+    rtklib_trace(3,"setopt_obstype: sys=%d\n",sys);
     
     opt->nobs[sys]=0;
     
@@ -403,7 +403,7 @@ static int scan_obstype(int format, const char *file, rnxopt_t *opt,
     char msg[128];
     int i,j,k,l,c=0,type,sys,abort=0,n[6]={0};
     
-    trace(3,"scan_obstype: file=%s, opt=%s\n",file,opt);
+    rtklib_trace(3,"scan_obstype: file=%s, opt=%s\n",file,opt);
     
     if (!(str=gen_strfile(format,opt->rcvopt,*time))) return 0;
     
@@ -457,11 +457,11 @@ static int scan_obstype(int format, const char *file, rnxopt_t *opt,
     free_strfile(str);
     
     if (abort) {
-        trace(2,"aborted in scan\n");
+        rtklib_trace(2,"aborted in scan\n");
         return 0;
     }
     for (i=0;i<6;i++) for (j=0;j<n[i];j++) {
-        trace(2,"scan_obstype: sys=%d code=%s type=%d\n",i,code2obs(codes[i][j],NULL),types[i][j]);
+        rtklib_trace(2,"scan_obstype: sys=%d code=%s type=%d\n",i,code2obs(codes[i][j],NULL),types[i][j]);
     }
     for (i=0;i<6;i++) {
         
@@ -472,7 +472,7 @@ static int scan_obstype(int format, const char *file, rnxopt_t *opt,
         setopt_obstype(codes[i],types[i],i,opt);
         
         for (j=0;j<n[i];j++) {
-            trace(3,"scan_obstype: sys=%d code=%s\n",i,code2obs(codes[i][j],NULL));
+            rtklib_trace(3,"scan_obstype: sys=%d code=%s\n",i,code2obs(codes[i][j],NULL));
         }
     }
     return 1;
@@ -547,7 +547,7 @@ static void set_obstype(int format, rnxopt_t *opt)
     const unsigned char *codes;
     int i;
     
-    trace(3,"set_obstype: format=%d\n",format);
+    rtklib_trace(3,"set_obstype: format=%d\n",format);
     
     for (i=0;i<6;i++) {
         switch (format) {
@@ -586,13 +586,13 @@ static void restslips(unsigned char slips[][NFREQ+NEXOBS], obsd_t *data, int n)
     }
 }
 /* open output files ---------------------------------------------------------*/
-static int openfile(FILE **ofp, char *files[], const char *file,
+static int rnx_openfile(FILE **ofp, char *files[], const char *file,
                     const rnxopt_t *opt, nav_t *nav)
 {
     char path[1024];
     int i;
     
-    trace(3,"openfile:\n");
+    rtklib_trace(3,"rnx_openfile:\n");
     
     for (i=0;i<NOUTFILE;i++) {
         
@@ -624,11 +624,11 @@ static int openfile(FILE **ofp, char *files[], const char *file,
     return 1;
 }
 /* close output files --------------------------------------------------------*/
-static void closefile(FILE **ofp, const rnxopt_t *opt, nav_t *nav)
+static void rnx_closefile(FILE **ofp, const rnxopt_t *opt, nav_t *nav)
 {
     int i;
     
-    trace(3,"closefile:\n");
+    rtklib_trace(3,"rnx_closefile:\n");
     
     for (i=0;i<NOUTFILE;i++) {
         
@@ -653,7 +653,7 @@ static void convobs(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n,
 {
     gtime_t time;
     
-    trace(3,"convobs :\n");
+    rtklib_trace(3,"convobs :\n");
     
     if (!ofp[0]||str->obs->n<=0) return;
     
@@ -681,7 +681,7 @@ static void convnav(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n)
     gtime_t ts1,te1,ts2,te2;
     int sys,prn;
     
-    trace(3,"convnav :\n");
+    rtklib_trace(3,"convnav :\n");
     
     ts1=opt->ts; if (ts1.time!=0) ts1=timeadd(ts1,-MAXDTOE);
     te1=opt->te; if (te1.time!=0) te1=timeadd(te1, MAXDTOE);
@@ -785,7 +785,7 @@ static void convsbs(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n)
     gtime_t ts1,te1;
     int msg,prn,sat,sys;
     
-    trace(3,"convsbs :\n");
+    rtklib_trace(3,"convsbs :\n");
     
     ts1=opt->ts; if (ts1.time!=0) ts1=timeadd(ts1,-MAXDTOE);
     te1=opt->te; if (te1.time!=0) te1=timeadd(te1, MAXDTOE);
@@ -796,7 +796,7 @@ static void convsbs(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n)
     if      (MINPRNSBS<=prn&&prn<=MAXPRNSBS) sys=SYS_SBS;
     else if (MINPRNQZS<=prn&&prn<=MAXPRNQZS) sys=SYS_QZS;
     else {
-        trace(2,"sbas message satellite error: prn=%d\n",prn);
+        rtklib_trace(2,"sbas message satellite error: prn=%d\n",prn);
         return;
     }
     if (!(sat=satno(sys,prn))||opt->exsats[sat-1]==1) return;
@@ -828,7 +828,7 @@ static void convlex(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n)
 {
     gtime_t ts1,te1;
     
-    trace(3,"convlex :\n");
+    rtklib_trace(3,"convlex :\n");
     
     ts1=opt->ts; if (ts1.time!=0) ts1=timeadd(ts1,-MAXDTOE);
     te1=opt->te; if (te1.time!=0) te1=timeadd(te1, MAXDTOE);
@@ -849,7 +849,7 @@ static void setapppos(strfile_t *str, rnxopt_t *opt)
     /* point positioning with last obs data */
     if (!pntpos(str->obs->data,str->obs->n,str->nav,&prcopt,&sol,NULL,NULL,
                 msg)) {
-        trace(2,"point position error (%s)\n",msg);
+        rtklib_trace(2,"point position error (%s)\n",msg);
         return;
     }
     matcpy(opt->apppos,sol.rr,3,1);
@@ -892,7 +892,7 @@ static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
     char path[1024],*paths[NOUTFILE],s[NOUTFILE][1024];
     char *epath[MAXEXFILE]={0},*staid=*opt->staid?opt->staid:"0000";
     
-    trace(3,"convrnx_s: sess=%d format=%d file=%s ofile=%s %s %s %s %s %s %s\n",
+    rtklib_trace(3,"convrnx_s: sess=%d format=%d file=%s ofile=%s %s %s %s %s %s %s\n",
           sess,format,file,ofile[0],ofile[1],ofile[2],ofile[3],ofile[4],
           ofile[5],ofile[6]);
     
@@ -939,7 +939,7 @@ static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
         }
     }
     /* open output files */
-    if (!openfile(ofp,paths,path,opt,str->nav)) {
+    if (!rnx_openfile(ofp,paths,path,opt,str->nav)) {
         for (i=0;i<MAXEXFILE;i++) free(epath[i]);
         free_strfile(str);
         return 0;
@@ -986,7 +986,7 @@ static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
         rnx2opt(&str->rnx,opt);
     }
     /* close output files */
-    closefile(ofp,opt,str->nav);
+    rnx_closefile(ofp,opt,str->nav);
     
     /* remove empty output files */
     for (i=0;i<NOUTFILE;i++) {
@@ -1031,7 +1031,7 @@ extern int convrnx(int format, rnxopt_t *opt, const char *file, char **ofile)
     double tu,ts;
     int i,week,stat=1;
     
-    trace(3,"convrnx: format=%d file=%s ofile=%s %s %s %s %s %s %s\n",
+    rtklib_trace(3,"convrnx: format=%d file=%s ofile=%s %s %s %s %s %s %s\n",
           format,file,ofile[0],ofile[1],ofile[2],ofile[3],ofile[4],ofile[5],
           ofile[6]);
     

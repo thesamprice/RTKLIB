@@ -437,13 +437,13 @@ static int stateserial(serial_t *serial)
     return !serial?0:(serial->error?-1:2);
 }
 /* open file -----------------------------------------------------------------*/
-static int openfile_(file_t *file, gtime_t time, char *msg)
+static int rnx_openfile_(file_t *file, gtime_t time, char *msg)
 {    
     FILE *fp;
     char *rw,tagpath[MAXSTRPATH+4]="";
     char tagh[TIMETAGH_LEN+1]="";
     
-    tracet(3,"openfile_: path=%s time=%s\n",file->path,time_str(time,0));
+    tracet(3,"rnx_openfile_: path=%s time=%s\n",file->path,time_str(time,0));
     
     file->time=utc2gpst(timeget());
     file->tick=file->tick_f=tickget();
@@ -460,10 +460,10 @@ static int openfile_(file_t *file, gtime_t time, char *msg)
     
     if (!(file->fp=fopen(file->openpath,rw))) {
         sprintf(msg,"file open error: %s",file->openpath);
-        tracet(1,"openfile: %s\n",msg);
+        tracet(1,"rnx_openfile: %s\n",msg);
         return 0;
     }
-    tracet(4,"openfile_: open file %s (%s)\n",file->openpath,rw);
+    tracet(4,"rnx_openfile_: open file %s (%s)\n",file->openpath,rw);
     
     sprintf(tagpath,"%s.tag",file->openpath);
     
@@ -471,11 +471,11 @@ static int openfile_(file_t *file, gtime_t time, char *msg)
         
         if (!(file->fp_tag=fopen(tagpath,rw))) {
             sprintf(msg,"tag open error: %s",tagpath);
-            tracet(1,"openfile: %s\n",msg);
+            tracet(1,"rnx_openfile: %s\n",msg);
             fclose(file->fp);
             return 0;
         }
-        tracet(4,"openfile_: open tag file %s (%s)\n",tagpath,rw);
+        tracet(4,"rnx_openfile_: open tag file %s (%s)\n",tagpath,rw);
         
         if (file->mode&STR_MODE_R) {
             if (fread(&tagh,TIMETAGH_LEN,1,file->fp_tag)==1&&
@@ -508,9 +508,9 @@ static int openfile_(file_t *file, gtime_t time, char *msg)
     return 1;
 }
 /* close file ----------------------------------------------------------------*/
-static void closefile_(file_t *file)
+static void stream_closefile_(file_t *file)
 {
-    tracet(3,"closefile_: path=%s\n",file->path);
+    tracet(3,"stream_closefile_: path=%s\n",file->path);
     
     if (file->fp) fclose(file->fp);
     if (file->fp_tag) fclose(file->fp_tag);
@@ -519,7 +519,7 @@ static void closefile_(file_t *file)
     file->fp=file->fp_tag=file->fp_tmp=file->fp_tag_tmp=NULL;
 }
 /* open file (path=filepath[::T[::+<off>][::x<speed>]][::S=swapintv]) --------*/
-static file_t *openfile(const char *path, int mode, char *msg)
+static file_t *rnx_openfile(const char *path, int mode, char *msg)
 {
     file_t *file;
     gtime_t time,time0={0};
@@ -527,7 +527,7 @@ static file_t *openfile(const char *path, int mode, char *msg)
     char *p;
     int timetag=0;
     
-    tracet(3,"openfile: path=%s mode=%d\n",path,mode);
+    tracet(3,"rnx_openfile: path=%s mode=%d\n",path,mode);
     
     if (!(mode&(STR_MODE_R|STR_MODE_W))) return NULL;
     
@@ -561,19 +561,19 @@ static file_t *openfile(const char *path, int mode, char *msg)
     time=utc2gpst(timeget());
     
     /* open new file */
-    if (!openfile_(file,time,msg)) {
+    if (!rnx_openfile_(file,time,msg)) {
         free(file);
         return NULL;
     }
     return file;
 }
 /* close file ----------------------------------------------------------------*/
-static void closefile(file_t *file)
+static void stream_closefile(file_t *file)
 {
-    tracet(3,"closefile: fp=%d\n",file->fp);
+    tracet(3,"stream_closefile: fp=%d\n",file->fp);
     
     if (!file) return;
-    closefile_(file);
+    stream_closefile_(file);
     free(file);
 }
 /* open new swap file --------------------------------------------------------*/
@@ -598,7 +598,7 @@ static void swapfile(file_t *file, gtime_t time, char *msg)
     file->fp_tag_tmp=file->fp_tag;
     
     /* open new swap file */
-    openfile_(file,time,msg);
+    rnx_openfile_(file,time,msg);
 }
 /* close old swap file -------------------------------------------------------*/
 static void swapclose(file_t *file)
@@ -1833,7 +1833,7 @@ extern int stropen(stream_t *stream, int type, int mode, const char *path)
     stream->port=NULL;
     switch (type) {
         case STR_SERIAL  : stream->port=openserial(path,mode,stream->msg); break;
-        case STR_FILE    : stream->port=openfile  (path,mode,stream->msg); break;
+        case STR_FILE    : stream->port=rnx_openfile  (path,mode,stream->msg); break;
         case STR_TCPSVR  : stream->port=opentcpsvr(path,     stream->msg); break;
         case STR_TCPCLI  : stream->port=opentcpcli(path,     stream->msg); break;
         case STR_NTRIPSVR: stream->port=openntrip (path,0,   stream->msg); break;
@@ -1857,7 +1857,7 @@ extern void strclose(stream_t *stream)
     if (stream->port) {
         switch (stream->type) {
             case STR_SERIAL  : closeserial((serial_t *)stream->port); break;
-            case STR_FILE    : closefile  ((file_t   *)stream->port); break;
+            case STR_FILE    : stream_closefile  ((file_t   *)stream->port); break;
             case STR_TCPSVR  : closetcpsvr((tcpsvr_t *)stream->port); break;
             case STR_TCPCLI  : closetcpcli((tcpcli_t *)stream->port); break;
             case STR_NTRIPSVR: closentrip ((ntrip_t  *)stream->port); break;
@@ -1867,7 +1867,7 @@ extern void strclose(stream_t *stream)
         }
     }
     else {
-        trace(2,"no port to close stream: type=%d\n",stream->type);
+        rtklib_trace(2,"no port to close stream: type=%d\n",stream->type);
     }
     stream->type=0;
     stream->mode=0;
@@ -2154,7 +2154,7 @@ static int gen_hex(const char *msg, unsigned char *buff)
     unsigned int byte;
     int i,narg=0;
     
-    trace(4,"gen_hex: msg=%s\n",msg);
+    rtklib_trace(4,"gen_hex: msg=%s\n",msg);
     
     strncpy(mbuff,msg,1023);
     for (p=strtok(mbuff," ");p&&narg<256;p=strtok(NULL," ")) {

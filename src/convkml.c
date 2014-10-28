@@ -164,7 +164,7 @@ extern int convkml(const char *infile, const char *outfile, gtime_t ts,
     int i,j;
     char *p,file[1024];
     
-    trace(3,"convkml : infile=%s outfile=%s\n",infile,outfile);
+    rtklib_trace(3,"convkml : infile=%s outfile=%s\n",infile,outfile);
     
     if (!*outfile) {
         if ((p=strrchr(infile,'.'))) {

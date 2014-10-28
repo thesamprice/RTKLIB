@@ -244,7 +244,7 @@ static int decode_measepoch(raw_t *raw){
     double SB1_WaveLength, SB1_Code = 0.0;
     int SB1_FreqNr;
 
-    trace(4,"SBF decode_measepoch: len=%d\n",raw->len);
+    rtklib_trace(4,"SBF decode_measepoch: len=%d\n",raw->len);
 
     /* Get time information */
     tow =U4(p);                                            /*       TOW in ms */
@@ -395,7 +395,7 @@ static int decode_measepoch(raw_t *raw){
 
         /* I HAVE NO IDEA WHAT THIS DOES */
         if (!(sat=satno(MINPRNSBS<=prn?SYS_SBS:SYS_GPS,prn))) {
-            trace(2,"SBF decode_measepoch sat number error: prn=%d\n",prn);
+            rtklib_trace(2,"SBF decode_measepoch sat number error: prn=%d\n",prn);
             continue;
         }
 
@@ -687,10 +687,10 @@ static int decode_gpsnav(raw_t *raw){
     unsigned short prn, sat;
     int week;
 
-    trace(4,"SBF decode_gpsnav: len=%d\n",raw->len);
+    rtklib_trace(4,"SBF decode_gpsnav: len=%d\n",raw->len);
 
     if ((raw->len)<120) {
-        trace(2,"SBF decode_gpsnav frame length error: len=%d\n",raw->len);
+        rtklib_trace(2,"SBF decode_gpsnav frame length error: len=%d\n",raw->len);
         return -1;
     }
 
@@ -698,7 +698,7 @@ static int decode_gpsnav(raw_t *raw){
     sat = prn;
 
     if (!((prn>=1)&&(prn<=37))){
-        trace(2,"SBF decode_gpsnav prn error: sat=%d\n",prn);
+        rtklib_trace(2,"SBF decode_gpsnav prn error: sat=%d\n",prn);
         return -1;
     }
 
@@ -732,7 +732,7 @@ static int decode_gpsnav(raw_t *raw){
     eph.fit    = 0;
 
     if (week>=4096) {
-        trace(2,"SBF gps ephemeris week error: sat=%2d week=%d\n",sat,week);
+        rtklib_trace(2,"SBF gps ephemeris week error: sat=%2d week=%d\n",sat,week);
         return -1;
     }
 
@@ -779,10 +779,10 @@ static int decode_gpsrawcanav(raw_t *raw){
     unsigned char *pt=_buf;
     int i=0,ii=0,id,resp;
 
-    trace(3,"SBF decode_gpsrawcanav: len=%d\n",raw->len);
+    rtklib_trace(3,"SBF decode_gpsrawcanav: len=%d\n",raw->len);
 
     if (raw->len<58) {
-        trace(2,"SBF decode_gpsrawcanav block length error: len=%d\n",raw->len);
+        rtklib_trace(2,"SBF decode_gpsrawcanav block length error: len=%d\n",raw->len);
         return -1;
     }
 
@@ -825,7 +825,7 @@ static int decode_gpsrawcanav(raw_t *raw){
      eph.sat=sat;
      raw->nav.eph[sat-1]=eph;
      raw->ephsat=sat;
-     trace(4,"SBF, decode_gpsrawcanav: sat=%2d\n",sat);
+     rtklib_trace(4,"SBF, decode_gpsrawcanav: sat=%2d\n",sat);
      return 2;
 }
 
@@ -833,7 +833,7 @@ static int decode_gpsrawcanav(raw_t *raw){
 static int decode_gpsion(raw_t *raw){
     unsigned char prn, *p=(raw->buff)+8;            /* points at TOW location */
 
-    trace(4,"SBF decode_gpsion: len=%d\n", raw->len);
+    rtklib_trace(4,"SBF decode_gpsion: len=%d\n", raw->len);
     prn = U1(p + 6);
     raw->nav.ion_gps[0] = R4(p + 8);
     raw->nav.ion_gps[1] = R4(p + 12);
@@ -852,7 +852,7 @@ static int decode_gpsutc(raw_t *raw)
 {
     unsigned char *p=(raw->buff)+8;                 /* points at TOW location */
 
-    trace(4,"SBF decode_gpsutc: len=%d\n", raw->len);
+    rtklib_trace(4,"SBF decode_gpsutc: len=%d\n", raw->len);
 
     /* GPS delta-UTC parameters */
     raw->nav.utc_gps[1] = R4(p + 8);                                  /*   A1 */
@@ -878,14 +878,14 @@ static int decode_sbf(raw_t *raw)
     int type = U2(raw->buff+4) & 0x1fff << 0;
     int revision = U2(raw->buff+4) >> 13;
 
-    trace(3,"decode_sbf: type=%04x len=%d\n",type,raw->len);
+    rtklib_trace(3,"decode_sbf: type=%04x len=%d\n",type,raw->len);
 
     /* read the SBF block CRC */
     crc = U2(raw->buff+2);
 
     /* checksum skipping first 4 bytes */
     if (checksum(raw->buff+4, raw->len-4) !=  crc){
-        trace(2,"sbf checksum error: type=%04x len=%d\n",type, raw->len);
+        rtklib_trace(2,"sbf checksum error: type=%04x len=%d\n",type, raw->len);
         return -1;
     }
 
@@ -929,7 +929,7 @@ static int sync_sbf(unsigned char *buff, unsigned char data)
 *-----------------------------------------------------------------------------*/
 extern int input_sbf(raw_t *raw, unsigned char data)
 {
-    trace(5,"input_sbf: data=%02x\n",data);
+    rtklib_trace(5,"input_sbf: data=%02x\n",data);
     
     if (raw->nbyte==0) {
         if (sync_sbf(raw->buff,data)) raw->nbyte=2;
@@ -940,7 +940,7 @@ extern int input_sbf(raw_t *raw, unsigned char data)
     if (raw->nbyte<8) return 0;
     
     if ((raw->len=U2(raw->buff+6))>MAXRAWLEN) {
-        trace(2,"sbf length error: len=%d\n",raw->len);
+        rtklib_trace(2,"sbf length error: len=%d\n",raw->len);
         raw->nbyte=0;
         return -1;
     }
@@ -959,7 +959,7 @@ extern int input_sbff(raw_t *raw, FILE *fp)
 {
     int i,data;
 
-    trace(4,"input_sbff:\n");
+    rtklib_trace(4,"input_sbff:\n");
 
     /* go to the beginning of the first block */
     if (raw->nbyte==0) {
@@ -977,7 +977,7 @@ extern int input_sbff(raw_t *raw, FILE *fp)
 
     /* decode le length of the block and store it in len*/
     if ((raw->len=U2(raw->buff+6))>MAXRAWLEN) {
-        trace(2,"sbf length error: len=%d\n",raw->len);
+        rtklib_trace(2,"sbf length error: len=%d\n",raw->len);
         raw->nbyte=0;
         return -1;
     }

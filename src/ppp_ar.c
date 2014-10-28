@@ -282,8 +282,8 @@ static int fix_sol(rtk_t *rtk, const int *sat1, const int *sat2,
         R[i+i*n]=SQR(CONST_AMB);
     }
     /* update states with constraints */
-    if ((info=filter(rtk->x,rtk->P,H,v,R,rtk->nx,n))) {
-        trace(1,"filter error (info=%d)\n",info);
+    if ((info=rtklib_filter(rtk->x,rtk->P,H,v,R,rtk->nx,n))) {
+        rtklib_trace(1,"filter error (info=%d)\n",info);
         free(v); free(H); free(R);
         return 0;
     }
@@ -399,7 +399,7 @@ static int fix_amb_ILS(rtk_t *rtk, int *sat1, int *sat2, int *NW, int n)
     
     /* integer least square */
     if ((info=lambda(m,2,B1,Q,N1,s))) {
-        trace(2,"lambda error: info=%d\n",info);
+        rtklib_trace(2,"lambda error: info=%d\n",info);
         return 0;
     }
     if (s[0]<=0.0) return 0;
@@ -408,10 +408,10 @@ static int fix_amb_ILS(rtk_t *rtk, int *sat1, int *sat2, int *NW, int n)
     
     /* varidation by ratio-test */
     if (rtk->opt.thresar[0]>0.0&&rtk->sol.ratio<rtk->opt.thresar[0]) {
-        trace(2,"varidation error: n=%2d ratio=%8.3f\n",m,rtk->sol.ratio);
+        rtklib_trace(2,"varidation error: n=%2d ratio=%8.3f\n",m,rtk->sol.ratio);
         return 0;
     }
-    trace(2,"varidation ok: %s n=%2d ratio=%8.3f\n",time_str(rtk->sol.time,0),m,
+    rtklib_trace(2,"varidation ok: %s n=%2d ratio=%8.3f\n",time_str(rtk->sol.time,0),m,
           rtk->sol.ratio);
     
     /* narrow-lane to iono-free ambiguity */
@@ -434,7 +434,7 @@ extern int pppamb(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav,
     
     if (n<=0||rtk->opt.ionoopt!=IONOOPT_IFLC||rtk->opt.nf<2) return 0;
     
-    trace(3,"pppamb: time=%s n=%d\n",time_str(obs[0].time,0),n);
+    rtklib_trace(3,"pppamb: time=%s n=%d\n",time_str(obs[0].time,0),n);
     
     elmask=rtk->opt.elmaskar>0.0?rtk->opt.elmaskar:rtk->opt.elmin;
     

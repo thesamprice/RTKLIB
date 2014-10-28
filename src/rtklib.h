@@ -57,8 +57,9 @@ extern "C" {
 
 #define COPYRIGHT_RTKLIB \
             "Copyright (C) 2007-2014 by T.Takasu\nAll rights reserved."
-
+#ifndef PI
 #define PI          3.1415926535897932  /* pi */
+#endif
 #define D2R         (PI/180.0)          /* deg to rad */
 #define R2D         (180.0/PI)          /* rad to deg */
 #define CLIGHT      299792458.0         /* speed of light (m/s) */
@@ -1307,7 +1308,7 @@ extern int  solve (const char *tr, const double *A, const double *Y, int n,
                    int m, double *X);
 extern int  lsq   (const double *A, const double *y, int n, int m, double *x,
                    double *Q);
-extern int  filter(double *x, double *P, const double *H, const double *v,
+extern int  rtklib_filter(double *x, double *P, const double *H, const double *v,
                    const double *R, int n, int m);
 extern int  smoother(const double *xf, const double *Qf, const double *xb,
                      const double *Qb, int n, double *xs, double *Qs);
@@ -1401,7 +1402,7 @@ extern int  geterp (const erp_t *erp, gtime_t time, double *val);
 extern void traceopen(const char *file);
 extern void traceclose(void);
 extern void tracelevel(int level);
-extern void trace    (int level, const char *format, ...);
+extern void rtklib_trace    (int level, const char *format, ...);
 extern void tracet   (int level, const char *format, ...);
 extern void tracemat (int level, const double *A, int n, int m, int p, int q);
 extern void traceobs (int level, const obsd_t *obs, int n);
@@ -1536,6 +1537,13 @@ extern int readrnxt(const char *file, int rcv, gtime_t ts, gtime_t te,
                     sta_t *sta);
 extern int readrnxc(const char *file, nav_t *nav);
 
+/*! output rinex obs header -----------------------------------------------------
+* output rinex obd file header
+* args   : FILE   *fp       I   output file pointer
+*          rnxopt_t *opt    I   rinex options
+*          nav_t  *nav      I   navigation data
+* return : status (1:ok, 0:output error)
+*-----------------------------------------------------------------------------*/
 extern int outrnxobsh(FILE *fp, const rnxopt_t *opt, const nav_t *nav);
 
 /*!
@@ -1611,6 +1619,18 @@ extern int tle_name_read(const char *file, tle_t *tle);
 extern int tle_pos(gtime_t time, const char *name, const char *satno,
                    const char *desig, const tle_t *tle, const erp_t *erp,
                    double *rs);
+/*!
+*@brief Selects an ephemeris for a given time, sv
+*@param time
+*  @brief Ephemeris returned will be within 2 hours of this time
+*@param sat
+*  @brief Satellite SV number
+*@param iode
+*  @brief IODE, if a negative number is used then any iode may be selected.
+*@param nav
+*  @brief Database of ephemerides to search through.
+*/
+eph_t *seleph(gtime_t time, int sat, int iode, const nav_t *nav);
 
 /* receiver raw data functions -----------------------------------------------*/
 extern unsigned int getbitu(const unsigned char *buff, int pos, int len);
