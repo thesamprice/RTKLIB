@@ -42,6 +42,8 @@
 #include <pthread.h>
 #endif
 #ifdef __cplusplus
+namespace rtklib{
+
 extern "C" {
 #endif
 
@@ -1916,6 +1918,7 @@ extern int lexioncorr(gtime_t time, const nav_t *nav, const double *pos,
                       const double *azel, double *delay, double *var);
 
 #ifdef __cplusplus
-}
+} /*End of extern C*/
+} /*End of namespace*/
 #endif
 #endif /* RTKLIB_H */
