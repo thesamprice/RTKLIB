@@ -3043,7 +3043,7 @@ extern void traceb(int level, const unsigned char *p, int n)
 extern void traceopen(const char *file) {}
 extern void traceclose(void) {}
 extern void tracelevel(int level) {}
-extern void trace   (int level, const char *format, ...) {}
+extern void rtk_trace   (int level, const char *format, ...) {}
 extern void tracet  (int level, const char *format, ...) {}
 extern void tracemat(int level, const double *A, int n, int m, int p, int q) {}
 extern void traceobs(int level, const obsd_t *obs, int n) {}
