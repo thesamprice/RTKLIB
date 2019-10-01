@@ -2866,7 +2866,7 @@ extern void strsync(stream_t *stream1, stream_t *stream2)
 * args   : stream_t *stream I  stream
 * return : none
 *-----------------------------------------------------------------------------*/
-extern void strlock  (stream_t *stream) {lock  (&stream->lock);}
+extern void strlock  (stream_t *stream) {rtk_lock  (&stream->lock);}
 extern void strunlock(stream_t *stream) {unlock(&stream->lock);}
 
 /* read stream -----------------------------------------------------------------
