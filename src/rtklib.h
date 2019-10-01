@@ -511,14 +511,14 @@ extern "C" {
 #define thread_t    HANDLE
 #define lock_t      CRITICAL_SECTION
 #define initlock(f) InitializeCriticalSection(f)
-#define lock(f)     EnterCriticalSection(f)
+#define rtk_lock(f)     EnterCriticalSection(f)
 #define unlock(f)   LeaveCriticalSection(f)
 #define FILEPATHSEP '\\'
 #else
 #define thread_t    pthread_t
 #define lock_t      pthread_mutex_t
 #define initlock(f) pthread_mutex_init(f,NULL)
-#define lock(f)     pthread_mutex_lock(f)
+#define rtk_lock(f)     pthread_mutex_lock(f)
 #define unlock(f)   pthread_mutex_unlock(f)
 #define FILEPATHSEP '/'
 #endif
@@ -1629,7 +1629,7 @@ EXPORT int tle_name_read(const char *file, tle_t *tle);
 EXPORT int tle_pos(gtime_t time, const char *name, const char *satno,
                    const char *desig, const tle_t *tle, const erp_t *erp,
                    double *rs);
-
+EXPORT  eph_t *seleph(gtime_t time, int sat, int iode, const nav_t *nav);
 /* receiver raw data functions -----------------------------------------------*/
 EXPORT unsigned int getbitu(const unsigned char *buff, int pos, int len);
 EXPORT int          getbits(const unsigned char *buff, int pos, int len);
