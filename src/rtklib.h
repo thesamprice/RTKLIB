@@ -1216,6 +1216,9 @@ typedef struct {        /* RTK control/result type */
     prcopt_t opt;       /* processing options */
 } rtk_t;
 
+/*!
+* @skip
+*/
 typedef struct half_cyc_tag {  /* half-cycle correction list type */
     unsigned char sat;  /* satellite number */
     unsigned char freq; /* frequency number (0:L1,1:L2,2:L5) */
@@ -1474,6 +1477,9 @@ EXPORT void sleepms(int ms);
 
 EXPORT int reppath(const char *path, char *rpath, gtime_t time, const char *rov,
                    const char *base);
+/*!
+* @skip
+*/
 EXPORT int reppaths(const char *path, char *rpaths[], int nmax, gtime_t ts,
                     gtime_t te, const char *rov, const char *base);
 
@@ -1519,6 +1525,9 @@ EXPORT void traceb   (int level, const unsigned char *p, int n);
 
 /* platform dependent functions ----------------------------------------------*/
 EXPORT int execcmd(const char *cmd);
+/*!
+* @skip
+*/
 EXPORT int expath (const char *path, char *paths[], int nmax);
 EXPORT void createdir(const char *path);
 
@@ -1710,10 +1719,22 @@ EXPORT void freesolbuf(solbuf_t *solbuf);
 EXPORT void freesolstatbuf(solstatbuf_t *solstatbuf);
 EXPORT sol_t *getsol(solbuf_t *solbuf, int index);
 EXPORT int addsol(solbuf_t *solbuf, const sol_t *sol);
+/*!
+* @skip
+*/
 EXPORT int readsol (char *files[], int nfile, solbuf_t *sol);
+/*!
+* @skip
+*/
 EXPORT int readsolt(char *files[], int nfile, gtime_t ts, gtime_t te,
                     double tint, int qflag, solbuf_t *sol);
+/*!
+* @skip
+*/
 EXPORT int readsolstat(char *files[], int nfile, solstatbuf_t *statbuf);
+/*!
+* @skip
+*/
 EXPORT int readsolstatt(char *files[], int nfile, gtime_t ts, gtime_t te,
                         double tint, solstatbuf_t *statbuf);
 EXPORT int inputsol(unsigned char data, gtime_t ts, gtime_t te, double tint,
