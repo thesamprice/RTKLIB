@@ -100,9 +100,9 @@
 
 #define SQR(x)      ((x)*(x))
 
-#define NUMSYS      6                   /* number of systems */
-#define MAXRNXLEN   (16*MAXOBSTYPE+4)   /* max rinex record length */
-#define MAXPOSHEAD  1024                /* max head line position */
+#define NUMSYS      7                   /* number of systems */
+#define MAXRNXLEN   (40*16*MAXOBSTYPE+4)   /* max rinex record length */
+#define MAXPOSHEAD  1024*10                /* max head line position */
 #define MINFREQ_GLO -7                  /* min frequency number glonass */
 #define MAXFREQ_GLO 13                  /* max frequency number glonass */
 #define NINCOBS     262144              /* inclimental number of obs data */
@@ -390,6 +390,8 @@ static void decode_obsh(FILE *fp, char *buff, double ver, int *tsys,
             return;
         }
         i=(int)(p-syscodes);
+        if(i >= 6)
+            printf("I is too big at %d\n",i);
         n=(int)str2num(buff,3,3);
         for (j=nt=0,k=7;j<n;j++,k+=4) {
             if (k>58) {
@@ -406,6 +408,8 @@ static void decode_obsh(FILE *fp, char *buff, double ver, int *tsys,
         }
         /* if unknown code in ver.3, set default code */
         for (j=0;j<nt;j++) {
+            if(j >= 256)
+                printf("J went to large %d\n",j);
             if (tobs[i][j][2]) continue;
             if (!(p=strchr(frqcodes,tobs[i][j][1]))) continue;
             tobs[i][j][2]=defcodes[i][(int)(p-frqcodes)];
@@ -421,7 +425,10 @@ static void decode_obsh(FILE *fp, char *buff, double ver, int *tsys,
                 if (!fgets(buff,MAXRNXLEN,fp)) break;
                 j=10;
             }
-            if (nt>=MAXOBSTYPE-1) continue;
+            if (nt>=MAXOBSTYPE-1){
+                printf("Increase MAXOBSTYPE from %d\n",MAXOBSTYPE);
+                continue;
+            } 
             if (ver<=2.99) {
                 setstr(str,buff+j,2);
                 convcode(ver,SYS_GPS,str,tobs[0][nt]);
@@ -612,7 +619,7 @@ static int readrnxh(FILE *fp, double *ver, char *type, int *sys, int *tsys,
                     char tobs[][MAXOBSTYPE][4], nav_t *nav, sta_t *sta)
 {
     double bias;
-    char buff[MAXRNXLEN],*label=buff+60;
+    char buff[MAXRNXLEN*10],*label=buff+60;
     int i=0,block=0,sat;
     
     rtk_trace(3,"readrnxh:\n");
@@ -1003,7 +1010,8 @@ static int readrnxobsb(FILE *fp, const char *opt, double ver, int *tsys,
             
             data[n].time=time;
             data[n].sat=(unsigned char)sats[i-1];
-            
+            if(n == MAXOBS)
+                printf("%d exceeds %d maxobs data lost\n", n, MAXOBS);
             /* decode obs data */
             if (decode_obsdata(fp,buff,ver,mask,index,data+n)&&n<MAXOBS) n++;
         }

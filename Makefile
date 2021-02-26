@@ -6,11 +6,13 @@ SRC += $(wildcard src/rcv/*.c)
 SRC += $(wildcard app/rnx2rtkp/*.c)
 
 OBJ = $(SRC:.c=.o)
-CC_FLAGS += -fPIC 
 CC_FLAGS += -DTRACE 
+CC_FLAGS += -fPIC -O0 -g3 
 #CC_FLAGS += --save-temps
 LDFLAGS += -fPIC
-$(EXEC).so: $(OBJ)
+LDFLAGS += -fsanitize=address
+CC_FLAGS += -fsanitize=address 
+$(EXEC).dylib: $(OBJ)
 	@$(CC) --shared $(LDFLAGS) -g3 -o $@ $(OBJ) $(LIBPATH) $(LIBS)
 
 $(EXEC).a: $(OBJ)
