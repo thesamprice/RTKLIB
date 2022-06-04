@@ -4364,63 +4364,8 @@ dl_readstas(const char *file, char **stas, int nmax"""
 
   return result
 
-librtk.lexupdatecorr.argtypes = [ctypes.POINTER(lexmsg_t),ctypes.POINTER(nav_t),ctypes.POINTER(gtime_t)]
-librtk.lexupdatecorr.restype = ctypes.c_int32
-def lexupdatecorr(msg,nav,tof):
-  """
-lexupdatecorr(const lexmsg_t *msg, nav_t *nav, gtime_t *tof"""
-
-  result = librtk.lexupdatecorr(msg,nav,tof)
 
 
-  return result
-
-librtk.lexreadmsg.argtypes = [ctypes.POINTER(ctypes.c_char),ctypes.c_int32,ctypes.POINTER(lex_t)]
-librtk.lexreadmsg.restype = ctypes.c_int32
-def lexreadmsg(file,sel,lex):
-  """
-lexreadmsg(const char *file, int sel, lex_t *lex"""
-
-  result = librtk.lexreadmsg(file,sel,lex)
-
-
-  return result
-
-librtk.lexconvbin.argtypes = [ctypes.c_int32,ctypes.c_int32,ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_char)]
-librtk.lexconvbin.restype = ctypes.c_int32
-def lexconvbin(type,format,infile,outfile):
-  """
-lexconvbin(int type, int format, const char *infile,
-                      const char *outfile"""
-
-  result = librtk.lexconvbin(type,format,infile,outfile)
-
-
-  return result
-
-librtk.lexeph2pos.argtypes = [gtime_t,ctypes.c_int32,ctypes.POINTER(nav_t),ctypes.POINTER(ctypes.c_double),ctypes.POINTER(ctypes.c_double),ctypes.POINTER(ctypes.c_double)]
-librtk.lexeph2pos.restype = ctypes.c_int32
-def lexeph2pos(time,sat,nav,rs,dts,var):
-  """
-lexeph2pos(gtime_t time, int sat, const nav_t *nav, double *rs,
-                      double *dts, double *var"""
-
-  result = librtk.lexeph2pos(time,sat,nav,rs,dts,var)
-
-
-  return result
-
-librtk.lexioncorr.argtypes = [gtime_t,ctypes.POINTER(nav_t),ctypes.POINTER(ctypes.c_double),ctypes.POINTER(ctypes.c_double),ctypes.POINTER(ctypes.c_double),ctypes.POINTER(ctypes.c_double)]
-librtk.lexioncorr.restype = ctypes.c_int32
-def lexioncorr(time,nav,pos,azel,delay,var):
-  """
-lexioncorr(gtime_t time, const nav_t *nav, const double *pos,
-                      const double *azel, double *delay, double *var"""
-
-  result = librtk.lexioncorr(time,nav,pos,azel,delay,var)
-
-
-  return result
 
 librtk.showmsg.argtypes = [ctypes.POINTER(ctypes.c_char)]
 librtk.showmsg.restype = ctypes.c_int32
