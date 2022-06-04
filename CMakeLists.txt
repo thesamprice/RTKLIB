@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.10)
 project(rtklib)
 
 # add the executable
-add_library(rtk
+add_library(rtk SHARED
 src/convgpx.c
 src/convkml.c
 src/convrnx.c
@@ -48,7 +48,7 @@ src/rcv/ss2.c
 src/rcv/ublox.c
 )
 
-
+add_definitions(-DIS_DLL=1)
 include_directories(rtk
 ./src/rcv
 ./src
